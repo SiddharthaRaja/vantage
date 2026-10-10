@@ -1,0 +1,118 @@
+{
+  "embedder": "hashing",
+  "quality_floor": 0.75,
+  "recommended_threshold": 0.9,
+  "recommendation_reason": "highest hit rate (49.7%) among thresholds whose false-hit rate stays at or below 2.0%; at this setting 149 of 300 model calls are avoided",
+  "points": [
+    {
+      "threshold": 0.7,
+      "n_queries": 300,
+      "hit_rate": 0.8566666666666667,
+      "exact_hit_rate": 0.06666666666666667,
+      "semantic_hit_rate": 0.79,
+      "false_hit_rate": 0.17509727626459143,
+      "mean_served_quality": 0.9116498599439776,
+      "mean_quality_on_hits": 0.8968675407906354,
+      "estimated_calls_saved": 257
+    },
+    {
+      "threshold": 0.75,
+      "n_queries": 300,
+      "hit_rate": 0.83,
+      "exact_hit_rate": 0.06666666666666667,
+      "semantic_hit_rate": 0.7633333333333333,
+      "false_hit_rate": 0.14056224899598393,
+      "mean_served_quality": 0.9296313414254591,
+      "mean_quality_on_hits": 0.9152184836451314,
+      "estimated_calls_saved": 249
+    },
+    {
+      "threshold": 0.8,
+      "n_queries": 300,
+      "hit_rate": 0.7633333333333333,
+      "exact_hit_rate": 0.08666666666666667,
+      "semantic_hit_rate": 0.6766666666666666,
+      "false_hit_rate": 0.10480349344978165,
+      "mean_served_quality": 0.9499104419545595,
+      "mean_quality_on_hits": 0.9343804916435279,
+      "estimated_calls_saved": 229
+    },
+    {
+      "threshold": 0.84,
+      "n_queries": 300,
+      "hit_rate": 0.6933333333333334,
+      "exact_hit_rate": 0.11666666666666667,
+      "semantic_hit_rate": 0.5766666666666667,
+      "false_hit_rate": 0.08173076923076923,
+      "mean_served_quality": 0.9598108465608465,
+      "mean_quality_on_hits": 0.9420348748473748,
+      "estimated_calls_saved": 208
+    },
+    {
+      "threshold": 0.88,
+      "n_queries": 300,
+      "hit_rate": 0.5666666666666667,
+      "exact_hit_rate": 0.19333333333333333,
+      "semantic_hit_rate": 0.37333333333333335,
+      "false_hit_rate": 0.03529411764705882,
+      "mean_served_quality": 0.9773703703703703,
+      "mean_quality_on_hits": 0.9600653594771241,
+      "estimated_calls_saved": 170
+    },
+    {
+      "threshold": 0.9,
+      "n_queries": 300,
+      "hit_rate": 0.49666666666666665,
+      "exact_hit_rate": 0.2,
+      "semantic_hit_rate": 0.2966666666666667,
+      "false_hit_rate": 0.006711409395973154,
+      "mean_served_quality": 0.9860648148148149,
+      "mean_quality_on_hits": 0.9719425801640568,
+      "estimated_calls_saved": 149
+    },
+    {
+      "threshold": 0.92,
+      "n_queries": 300,
+      "hit_rate": 0.4266666666666667,
+      "exact_hit_rate": 0.21,
+      "semantic_hit_rate": 0.21666666666666667,
+      "false_hit_rate": 0.0,
+      "mean_served_quality": 0.9914814814814815,
+      "mean_quality_on_hits": 0.9800347222222222,
+      "estimated_calls_saved": 128
+    },
+    {
+      "threshold": 0.94,
+      "n_queries": 300,
+      "hit_rate": 0.38,
+      "exact_hit_rate": 0.22333333333333333,
+      "semantic_hit_rate": 0.15666666666666668,
+      "false_hit_rate": 0.0,
+      "mean_served_quality": 0.9922222222222223,
+      "mean_quality_on_hits": 0.9795321637426901,
+      "estimated_calls_saved": 114
+    },
+    {
+      "threshold": 0.96,
+      "n_queries": 300,
+      "hit_rate": 0.30666666666666664,
+      "exact_hit_rate": 0.24666666666666667,
+      "semantic_hit_rate": 0.06,
+      "false_hit_rate": 0.0,
+      "mean_served_quality": 0.9922222222222223,
+      "mean_quality_on_hits": 0.9746376811594203,
+      "estimated_calls_saved": 92
+    },
+    {
+      "threshold": 0.98,
+      "n_queries": 300,
+      "hit_rate": 0.29333333333333333,
+      "exact_hit_rate": 0.25,
+      "semantic_hit_rate": 0.043333333333333335,
+      "false_hit_rate": 0.0,
+      "mean_served_quality": 0.9922222222222223,
+      "mean_quality_on_hits": 0.9734848484848485,
+      "estimated_calls_saved": 88
+    }
+  ]
+}

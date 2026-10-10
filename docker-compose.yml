@@ -1,0 +1,45 @@
+# Two services: the model server and the benchmark client.
+#
+#   docker compose up vantage                 # simulated demo, no GPU needed
+#   docker compose --profile gpu up vllm      # start the real server
+#   docker compose run --rm vantage sweep -c configs/sweeps/concurrency.yaml
+#
+# Running the load generator in a separate container from the server is not a
+# detail: a benchmark client that shares a CPU with the server it measures is
+# measuring itself as well.
+
+services:
+  vantage:
+    build: .
+    environment:
+      - VLLM_BASE_URL=http://vllm:8000/v1
+      - VLLM_API_KEY=EMPTY
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - VANTAGE_RESULTS_DIR=/app/results
+    volumes:
+      - ./results:/app/results
+      - ./configs:/app/configs
+      - ./data:/app/data
+    command: ["demo"]
+
+  vllm:
+    profiles: ["gpu"]
+    image: vllm/vllm-openai:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}
+    command: >
+      --model Qwen/Qwen3-4B-Instruct
+      --max-model-len 8192
+      --gpu-memory-utilization 0.90
+      --enable-prefix-caching
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

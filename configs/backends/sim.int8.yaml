@@ -1,0 +1,16 @@
+# Weight-only INT8. Faster decode because the memory-bandwidth bottleneck
+# eases; quality loss is usually small but is not zero, and the point of the
+# quality gate is to find out rather than assume.
+type: simulated
+name: sim-7b-int8
+model: simulated-7b-int8
+description: 7B, INT8 weight-only quantisation
+decode_tokens_per_s: 470
+batch_constant: 22
+prefill_tokens_per_s: 26000
+max_batch: 40
+overhead_s: 0.012
+jitter: 0.10
+fidelity: 0.95
+seed: 11
+pricing: { kind: self_hosted, gpu_hourly_usd: 0.75, n_gpus: 1 }

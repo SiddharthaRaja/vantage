@@ -1,0 +1,36 @@
+# Closed-loop concurrency sweep against a real vLLM server.
+# Answers: how many concurrent users can this deployment take before latency
+# leaves the SLO, and where does throughput stop improving?
+name: concurrency
+description: Closed-loop concurrency sweep on a live vLLM server.
+workload: data/workload.sample.jsonl
+cooldown_s: 5
+
+slo:
+  ttft_p95_s: 1.0
+  total_p95_s: 10.0
+
+defaults:
+  max_tokens: 192
+  load:
+    mode: closed
+    n_requests: 200
+    warmup_requests: 20
+    seed: 7
+
+runs:
+  - id: vllm
+    group: vllm-qwen3-4b
+    label: Qwen3-4B on vLLM
+    backend: vllm.qwen3-4b
+    matrix:
+      load.concurrency: [1, 2, 4, 8, 16, 32, 64, 128]
+
+quality:
+  enabled: true
+  baseline: vllm-qwen3-4b
+  eval_file: data/eval.holdout.jsonl
+
+cost:
+  api_reference: openai.gpt-4o-mini
+  self_hosted_reference: vllm.qwen3-4b

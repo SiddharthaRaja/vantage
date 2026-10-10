@@ -1,0 +1,41 @@
+# The fine-tuning branch's final experiment: the fine-tuned small model against
+# the base model it was distilled from, on identical hardware, same workload,
+# same quality set. Point the backend configs at your real servers before
+# running this.
+name: finetune-compare
+description: Base vs LoRA fine-tuned student -- latency, cost and quality.
+workload: data/workload.sample.jsonl
+cooldown_s: 5
+
+slo: { ttft_p95_s: 1.0, total_p95_s: 8.0 }
+
+defaults:
+  max_tokens: 192
+  load: { mode: closed, n_requests: 150, warmup_requests: 15, seed: 7 }
+
+runs:
+  - id: teacher
+    group: teacher
+    label: gpt-4o-mini (teacher)
+    backend: openai.gpt-4o-mini
+    matrix: { load.concurrency: [8] }
+  - id: base
+    group: base
+    label: Qwen3-4B base
+    backend: vllm.qwen3-4b
+    matrix: { load.concurrency: [8, 32] }
+  - id: student
+    group: student
+    label: Qwen3-4B + LoRA (ours)
+    backend: vllm.qwen3-4b-lora
+    matrix: { load.concurrency: [8, 32] }
+
+quality:
+  enabled: true
+  baseline: teacher
+  max_drop: 0.03
+  eval_file: data/eval.holdout.jsonl
+
+cost:
+  api_reference: openai.gpt-4o-mini
+  self_hosted_reference: vllm.qwen3-4b

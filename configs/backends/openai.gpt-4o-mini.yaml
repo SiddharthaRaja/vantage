@@ -1,0 +1,17 @@
+# Hosted frontier-ish baseline. Used for two things: as the teacher that
+# produces fine-tuning data, and as the cost line that self-hosting is compared
+# against in the break-even analysis.
+#
+# PRICES GO STALE. Check them before quoting a number anywhere that matters.
+type: openai
+name: gpt-4o-mini
+model: gpt-4o-mini
+base_url: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+api_key_env: OPENAI_API_KEY
+timeout_s: 120
+max_retries: 0
+pricing:
+  kind: api
+  input_usd_per_mtok: 0.15
+  output_usd_per_mtok: 0.60
+  note: "list price checked 2026-10; verify before publishing any cost claim"

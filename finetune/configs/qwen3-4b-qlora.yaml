@@ -1,0 +1,57 @@
+# QLoRA fine-tune of a small instruct model on distilled RAG answers.
+# These values fit a single 16GB GPU (a free Colab T4 at the slow end, an A10G
+# or 4090 comfortably). Everything here is a starting point, not a law.
+
+model:
+  base: Qwen/Qwen3-4B-Instruct
+  max_seq_len: 4096          # RAG prompts are long; truncating them teaches the
+                             # model to answer from half a context
+  attn_implementation: sdpa  # flash_attention_2 if the GPU and wheel support it
+  trust_remote_code: false
+
+quantization:
+  load_in_4bit: true         # QLoRA: frozen base in 4-bit, adapters in bf16
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+lora:
+  r: 16                      # 16 is the usual sweet spot; 8 underfits on style,
+                             # 64 mostly buys you a bigger adapter file
+  alpha: 32                  # the convention is alpha = 2r
+  dropout: 0.05
+  bias: none
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  # Attention-only (q,k,v,o) trains faster and is often enough; including the
+  # MLP projections helps when the task changes *what* the model says rather
+  # than only how it says it. Worth running both and comparing -- that
+  # comparison is a result in itself.
+
+train:
+  output_dir: outputs/qwen3-4b-vantage-lora
+  epochs: 2                  # LoRA on a few thousand examples overfits past ~3
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8        # effective batch 16
+  learning_rate: 2.0e-4      # 1e-4 to 3e-4 is the normal LoRA band; this is 10x
+                             # what you would use for a full fine-tune
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_strategy: steps
+  eval_steps: 50
+  save_strategy: steps
+  save_steps: 50
+  save_total_limit: 2
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  bf16: true                 # fp16 on older cards; bf16 wherever it exists
+  gradient_checkpointing: true
+  seed: 17
+  report_to: none            # set to wandb if you want curves worth screenshotting
+
+data:
+  train_file: finetune/data/train.jsonl
+  val_file: finetune/data/val.jsonl
+  completion_only: true      # loss on the answer tokens only -- see train_lora.py

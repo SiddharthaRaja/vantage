@@ -1,0 +1,157 @@
+{
+  "fp16[concurrency=1]": {
+    "peak_batch": 1,
+    "mean_engine_queue_s": 8.152021752286363e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16[concurrency=2]": {
+    "peak_batch": 2,
+    "mean_engine_queue_s": 8.040978281828954e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16[concurrency=4]": {
+    "peak_batch": 4,
+    "mean_engine_queue_s": 7.084739131048833e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16[concurrency=8]": {
+    "peak_batch": 8,
+    "mean_engine_queue_s": 5.774021770855103e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16[concurrency=16]": {
+    "peak_batch": 16,
+    "mean_engine_queue_s": 4.715695645838581e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16[concurrency=32]": {
+    "peak_batch": 32,
+    "mean_engine_queue_s": 1.8751087361084975e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16[concurrency=64]": {
+    "peak_batch": 32,
+    "mean_engine_queue_s": 0.1199630527826032,
+    "saturation_tokens_per_s": 6400
+  },
+  "int8[concurrency=4]": {
+    "peak_batch": 4,
+    "mean_engine_queue_s": 1.1150304356741127e-05,
+    "saturation_tokens_per_s": 10340
+  },
+  "int8[concurrency=8]": {
+    "peak_batch": 8,
+    "mean_engine_queue_s": 4.832847865976004e-06,
+    "saturation_tokens_per_s": 10340
+  },
+  "int8[concurrency=16]": {
+    "peak_batch": 16,
+    "mean_engine_queue_s": 3.691717379099472e-06,
+    "saturation_tokens_per_s": 10340
+  },
+  "int8[concurrency=32]": {
+    "peak_batch": 32,
+    "mean_engine_queue_s": 2.6155651974714482e-06,
+    "saturation_tokens_per_s": 10340
+  },
+  "int4[concurrency=4]": {
+    "peak_batch": 4,
+    "mean_engine_queue_s": 7.536956564249324e-06,
+    "saturation_tokens_per_s": 14880
+  },
+  "int4[concurrency=8]": {
+    "peak_batch": 8,
+    "mean_engine_queue_s": 5.703456528625912e-06,
+    "saturation_tokens_per_s": 14880
+  },
+  "int4[concurrency=16]": {
+    "peak_batch": 16,
+    "mean_engine_queue_s": 1.2502673905106823e-05,
+    "saturation_tokens_per_s": 14880
+  },
+  "int4[concurrency=32]": {
+    "peak_batch": 32,
+    "mean_engine_queue_s": 2.0785216846612142e-06,
+    "saturation_tokens_per_s": 14880
+  },
+  "prefix[concurrency=4]": {
+    "peak_batch": 4,
+    "mean_engine_queue_s": 5.367434764396065e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "prefix[concurrency=8]": {
+    "peak_batch": 8,
+    "mean_engine_queue_s": 4.531804358481642e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "prefix[concurrency=16]": {
+    "peak_batch": 16,
+    "mean_engine_queue_s": 3.287847774750528e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "prefix[concurrency=32]": {
+    "peak_batch": 32,
+    "mean_engine_queue_s": 2.7220652377170906e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "ft1_5b[concurrency=4]": {
+    "peak_batch": 4,
+    "mean_engine_queue_s": 7.2694782651840635e-06,
+    "saturation_tokens_per_s": 25200
+  },
+  "ft1_5b[concurrency=8]": {
+    "peak_batch": 8,
+    "mean_engine_queue_s": 4.469152155133602e-06,
+    "saturation_tokens_per_s": 25200
+  },
+  "ft1_5b[concurrency=16]": {
+    "peak_batch": 16,
+    "mean_engine_queue_s": 2.8105434921599226e-06,
+    "saturation_tokens_per_s": 25200
+  },
+  "ft1_5b[concurrency=32]": {
+    "peak_batch": 32,
+    "mean_engine_queue_s": 4.019021775014193e-06,
+    "saturation_tokens_per_s": 25200
+  },
+  "fp16-open[rate_qps=4]": {
+    "peak_batch": 6,
+    "mean_engine_queue_s": 8.777677404366606e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16-open[rate_qps=8]": {
+    "peak_batch": 10,
+    "mean_engine_queue_s": 8.606518492713264e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16-open[rate_qps=16]": {
+    "peak_batch": 15,
+    "mean_engine_queue_s": 7.639354213514101e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16-open[rate_qps=24]": {
+    "peak_batch": 25,
+    "mean_engine_queue_s": 9.61700000819595e-06,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16-open[rate_qps=32]": {
+    "peak_batch": 32,
+    "mean_engine_queue_s": 0.0007067846428436586,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16-open[rate_qps=40]": {
+    "peak_batch": 32,
+    "mean_engine_queue_s": 0.03856284875699109,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16-open[rate_qps=52]": {
+    "peak_batch": 32,
+    "mean_engine_queue_s": 0.538725708187723,
+    "saturation_tokens_per_s": 6400
+  },
+  "fp16-semcache": {
+    "peak_batch": 8,
+    "mean_engine_queue_s": 8.171596765614889e-06,
+    "saturation_tokens_per_s": 6400
+  }
+}

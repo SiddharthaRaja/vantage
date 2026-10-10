@@ -1,0 +1,19 @@
+# Simulated 7B at fp16 on one mid-range GPU. The reference point every other
+# simulated profile is compared against.
+type: simulated
+name: sim-7b-fp16
+model: simulated-7b-fp16
+description: 7B, fp16 weights, continuous batching, one 24GB GPU
+decode_tokens_per_s: 320      # per-stream decode rate with a batch of one
+batch_constant: 20            # k in r(b) = r1 * k / (k + b - 1); higher = batches better
+prefill_tokens_per_s: 24000
+max_batch: 32
+overhead_s: 0.012
+jitter: 0.10
+fidelity: 1.00                # quality reference: this profile answers correctly
+seed: 11
+pricing:
+  kind: self_hosted
+  gpu_hourly_usd: 0.75        # on-demand A10G-class, late 2026 spot-ish pricing
+  n_gpus: 1
+  note: "replace with your actual instance price before quoting a cost figure"

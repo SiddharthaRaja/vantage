@@ -1,0 +1,21 @@
+# The fine-tuning branch, in simulated form: a 1.5B model LoRA-tuned on this
+# task. Much faster and much cheaper than the 7B, and the open question -- the
+# one the quality gate answers -- is whether task-specific training recovers
+# the capability gap on this narrow task. Here it mostly does.
+type: simulated
+name: sim-1.5b-ft
+model: simulated-1.5b-lora-merged
+description: 1.5B fine-tuned on the task, fp16
+decode_tokens_per_s: 900
+batch_constant: 28
+prefill_tokens_per_s: 52000
+max_batch: 64
+overhead_s: 0.009
+jitter: 0.09
+fidelity: 0.93
+seed: 11
+pricing:
+  kind: self_hosted
+  gpu_hourly_usd: 0.35
+  n_gpus: 1
+  note: "fits on a much smaller GPU than the 7B -- part of the saving is the instance, not just the speed"

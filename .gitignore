@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.env
+results/**/raw.jsonl
+!results/demo/**
+.DS_Store
+outputs/
+checkpoints/
+wandb/

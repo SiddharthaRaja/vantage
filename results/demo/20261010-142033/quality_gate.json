@@ -1,0 +1,86 @@
+[
+  {
+    "baseline": "fp16",
+    "candidate": "int8",
+    "baseline_composite": 0.9335,
+    "candidate_composite": 0.9154,
+    "delta": -0.0181,
+    "delta_ci95": [
+      -0.0469,
+      0.0
+    ],
+    "significant": false,
+    "verdict": "pass",
+    "detail": "no significant regression: delta -0.018 (95% CI -0.047 to +0.000) over 30 paired items"
+  },
+  {
+    "baseline": "fp16",
+    "candidate": "int4",
+    "baseline_composite": 0.9335,
+    "candidate_composite": 0.8809,
+    "delta": -0.0526,
+    "delta_ci95": [
+      -0.0959,
+      -0.015
+    ],
+    "significant": true,
+    "verdict": "fail",
+    "detail": "quality regression beyond budget: delta -0.053 (95% CI -0.096 to -0.015) exceeds the allowed 0.020"
+  },
+  {
+    "baseline": "fp16",
+    "candidate": "prefix",
+    "baseline_composite": 0.9335,
+    "candidate_composite": 0.9335,
+    "delta": 0.0,
+    "delta_ci95": [
+      0.0,
+      0.0
+    ],
+    "significant": false,
+    "verdict": "pass",
+    "detail": "no significant regression: delta +0.000 (95% CI +0.000 to +0.000) over 30 paired items"
+  },
+  {
+    "baseline": "fp16",
+    "candidate": "ft1_5b",
+    "baseline_composite": 0.9335,
+    "candidate_composite": 0.9069,
+    "delta": -0.0266,
+    "delta_ci95": [
+      -0.0562,
+      -0.0026
+    ],
+    "significant": true,
+    "verdict": "fail",
+    "detail": "quality regression beyond budget: delta -0.027 (95% CI -0.056 to -0.003) exceeds the allowed 0.020"
+  },
+  {
+    "baseline": "fp16",
+    "candidate": "fp16 (open loop)",
+    "baseline_composite": 0.9335,
+    "candidate_composite": 0.9335,
+    "delta": 0.0,
+    "delta_ci95": [
+      0.0,
+      0.0
+    ],
+    "significant": false,
+    "verdict": "pass",
+    "detail": "no significant regression: delta +0.000 (95% CI +0.000 to +0.000) over 30 paired items"
+  },
+  {
+    "baseline": "fp16",
+    "candidate": "fp16 + semantic cache",
+    "baseline_composite": 0.9335,
+    "candidate_composite": 0.9335,
+    "delta": 0.0,
+    "delta_ci95": [
+      0.0,
+      0.0
+    ],
+    "significant": false,
+    "verdict": "pass",
+    "detail": "no significant regression: delta +0.000 (95% CI +0.000 to +0.000) over 30 paired items"
+  }
+]
