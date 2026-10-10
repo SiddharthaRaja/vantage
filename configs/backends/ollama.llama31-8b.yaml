@@ -1,0 +1,10 @@
+# Ollama exposes an OpenAI-compatible route at /v1, so it needs no new adapter.
+# Useful as the "runs on a laptop" datapoint; do not compare its numbers to a
+# server GPU and call it a finding.
+type: ollama
+name: ollama-llama31-8b
+model: llama3.1:8b
+base_url: ${OLLAMA_BASE_URL:-http://localhost:11434/v1}
+api_key_env: OLLAMA_API_KEY
+timeout_s: 300
+max_retries: 0

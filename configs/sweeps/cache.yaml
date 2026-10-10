@@ -1,0 +1,30 @@
+# Semantic cache study: threshold sweep for the safe operating point, then a
+# measured run with the cache in the request path at that threshold.
+name: cache
+description: Semantic cache threshold selection and measured end-to-end effect.
+workload: data/workload.sample.jsonl
+cooldown_s: 1
+
+slo: { ttft_p95_s: 1.0, total_p95_s: 8.0 }
+
+defaults:
+  max_tokens: 128
+  load: { mode: closed, concurrency: 8, n_requests: 200, warmup_requests: 8, seed: 7 }
+
+runs:
+  - { id: no-cache, group: fp16, label: no cache, backend: sim.fp16 }
+  - id: cache
+    group: fp16
+    label: semantic cache
+    backend: sim.fp16
+    cache: { embedder: hashing }
+    matrix:
+      cache.threshold: [0.80, 0.88, 0.92, 0.96]
+
+cache_analysis:
+  enabled: true
+  repeats: 6
+  paraphrase_rate: 0.6
+  thresholds: [0.70, 0.75, 0.80, 0.84, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98]
+  quality_floor: 0.75
+  max_false_hit_rate: 0.02

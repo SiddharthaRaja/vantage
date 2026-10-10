@@ -1,0 +1,27 @@
+# Does quantisation pay for itself? Speed, cost and quality for each precision
+# at a fixed concurrency, with a paired quality comparison against fp16.
+name: quantization
+description: fp16 vs int8 vs int4 at matched concurrency, with a quality gate.
+workload: data/workload.sample.jsonl
+cooldown_s: 2
+
+slo: { ttft_p95_s: 1.0, total_p95_s: 8.0 }
+
+defaults:
+  max_tokens: 192
+  load: { mode: closed, concurrency: 16, n_requests: 120, warmup_requests: 12, seed: 7 }
+
+runs:
+  - { id: fp16, group: fp16, label: fp16, backend: sim.fp16 }
+  - { id: int8, group: int8, label: int8 weight-only, backend: sim.int8 }
+  - { id: int4, group: int4, label: int4 AWQ, backend: sim.int4 }
+
+quality:
+  enabled: true
+  baseline: fp16
+  max_drop: 0.02
+  eval_file: data/eval.holdout.jsonl
+
+cost:
+  api_reference: openai.gpt-4o-mini
+  self_hosted_reference: sim.fp16

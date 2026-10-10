@@ -1,0 +1,15 @@
+# The fine-tuned adapter, served by the same vLLM process as the base model:
+#   vllm serve Qwen/Qwen3-4B-Instruct --enable-lora \
+#     --lora-modules vantage-ft=./outputs/qwen3-4b-vantage-lora --port 8000
+#
+# Serving the adapter rather than a merged model means base and fine-tune are
+# measured on identical hardware in the same process, which removes the most
+# common confound in "my fine-tune is faster" claims.
+type: vllm
+name: vllm-qwen3-4b-ft
+model: vantage-ft
+base_url: ${VLLM_BASE_URL:-http://localhost:8000/v1}
+api_key_env: VLLM_API_KEY
+timeout_s: 180
+max_retries: 0
+pricing: { kind: self_hosted, gpu_hourly_usd: 0.75, n_gpus: 1 }

@@ -1,0 +1,17 @@
+# Same engine as sim.fp16 with prefix caching enabled. RAG prompts share a long
+# system preamble and often repeat retrieved chunks, so prefill is where the
+# saving is: this profile models a 70% prefix hit rate at 4x faster prefill.
+type: simulated
+name: sim-7b-fp16-prefix
+model: simulated-7b-fp16
+description: 7B fp16 with automatic prefix caching
+decode_tokens_per_s: 320
+batch_constant: 20
+prefill_tokens_per_s: 24000
+max_batch: 32
+prefix_cache: true
+prefix_cache_hit_rate: 0.70
+prefix_cache_speedup: 4.0
+fidelity: 1.00
+seed: 11
+pricing: { kind: self_hosted, gpu_hourly_usd: 0.75, n_gpus: 1 }

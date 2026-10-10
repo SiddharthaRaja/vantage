@@ -1,0 +1,1794 @@
+{
+  "fp16": {
+    "config_id": "fp16",
+    "n": 30,
+    "exact_match": 0.5333333333333333,
+    "token_f1": 0.9040799409443819,
+    "citation_grounding": 1.0,
+    "number_agreement": 1.0,
+    "composite": 0.9335026400916387,
+    "composite_ci95": [
+      0.9049812699836001,
+      0.9597816205209083
+    ],
+    "judge_score": null,
+    "per_item": [
+      {
+        "item_id": "vd-000",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the inter-assay coefficient of variation was 8.0% for the CLIA protocol [3]."
+      },
+      {
+        "item_id": "vd-002",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The inter-assay coefficient of variation was 9.3% for the aptasensor protocol [3]."
+      },
+      {
+        "item_id": "vd-004",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, the inter-assay coefficient of variation was 6.8% for the HPLC protocol [3]."
+      },
+      {
+        "item_id": "vd-006",
+        "composite": 0.9034,
+        "token_f1": 0.8966,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the method achieved a limit of detection of 0.26 ng/mL in dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-008",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 1.08 ng/mL in serum [3]."
+      },
+      {
+        "item_id": "vd-010",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 2.33 ng/mL in dried blood spot [1]."
+      },
+      {
+        "item_id": "vd-012",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 212 participants [2]."
+      },
+      {
+        "item_id": "vd-014",
+        "composite": 0.7842,
+        "token_f1": 0.6316,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 120 participants [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-016",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 48 participants [2]."
+      },
+      {
+        "item_id": "vd-018",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 94.0% with the CLIA workflow [3]."
+      },
+      {
+        "item_id": "vd-020",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 101.4% with the aptasensor workflow [3]."
+      },
+      {
+        "item_id": "vd-022",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, mean recovery for 25(OH)D3 was 96.4% with the HPLC workflow [2]."
+      },
+      {
+        "item_id": "vd-024",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.98 [1]."
+      },
+      {
+        "item_id": "vd-026",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.96 [2]."
+      },
+      {
+        "item_id": "vd-028",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.93 [2]."
+      },
+      {
+        "item_id": "vd-030",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 40 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-032",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 25 minutes per sample [1]."
+      },
+      {
+        "item_id": "vd-034",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, turnaround time was 18 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-036",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [2]."
+      },
+      {
+        "item_id": "vd-038",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-040",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 20 ng/mL [2]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-042",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 11.0% [1]."
+      },
+      {
+        "item_id": "vd-044",
+        "composite": 0.8682,
+        "token_f1": 0.8182,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, cross-reactivity with the C3 epimer was reported at 9.6% [3]."
+      },
+      {
+        "item_id": "vd-046",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 1.6% [1]."
+      },
+      {
+        "item_id": "vd-048",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 200 microlitres of serum [1]."
+      },
+      {
+        "item_id": "vd-050",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the protocol requires 200 microlitres of dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-052",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 50 microlitres of serum [3]."
+      },
+      {
+        "item_id": "vd-054",
+        "composite": 0.8857,
+        "token_f1": 0.8571,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the validated linear range was 2.7 to 200 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-056",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validated linear range was 2.9 to 200 ng/mL [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-058",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the validated linear range was 3.1 to 120 ng/mL [2]."
+      }
+    ]
+  },
+  "int8": {
+    "config_id": "int8",
+    "n": 30,
+    "exact_match": 0.5,
+    "token_f1": 0.904607581885816,
+    "citation_grounding": 0.9333333333333333,
+    "number_agreement": 1.0,
+    "composite": 0.9154067451819506,
+    "composite_ci95": [
+      0.8791369972725931,
+      0.9482837860883899
+    ],
+    "judge_score": null,
+    "per_item": [
+      {
+        "item_id": "vd-000",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the inter-assay coefficient of variation was 8.0% for the CLIA protocol [3]."
+      },
+      {
+        "item_id": "vd-002",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The inter-assay coefficient of variation was 9.3% for the aptasensor protocol [3]."
+      },
+      {
+        "item_id": "vd-004",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, the inter-assay coefficient of variation was 6.8% for the HPLC protocol [3]."
+      },
+      {
+        "item_id": "vd-006",
+        "composite": 0.682,
+        "token_f1": 0.96,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 0.26 ng/mL in dried blood spot."
+      },
+      {
+        "item_id": "vd-008",
+        "composite": 0.6786,
+        "token_f1": 0.9524,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 1.08 ng/mL in serum."
+      },
+      {
+        "item_id": "vd-010",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 2.33 ng/mL in dried blood spot [1]."
+      },
+      {
+        "item_id": "vd-012",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 212 participants [2]."
+      },
+      {
+        "item_id": "vd-014",
+        "composite": 0.7842,
+        "token_f1": 0.6316,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 120 participants [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-016",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 48 participants [2]."
+      },
+      {
+        "item_id": "vd-018",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 94.0% with the CLIA workflow [3]."
+      },
+      {
+        "item_id": "vd-020",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 101.4% with the aptasensor workflow [3]."
+      },
+      {
+        "item_id": "vd-022",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, mean recovery for 25(OH)D3 was 96.4% with the HPLC workflow [2]."
+      },
+      {
+        "item_id": "vd-024",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.98 [1]."
+      },
+      {
+        "item_id": "vd-026",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.96 [2]."
+      },
+      {
+        "item_id": "vd-028",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.93 [2]."
+      },
+      {
+        "item_id": "vd-030",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 40 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-032",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 25 minutes per sample [1]."
+      },
+      {
+        "item_id": "vd-034",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, turnaround time was 18 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-036",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [2]."
+      },
+      {
+        "item_id": "vd-038",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-040",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 20 ng/mL [2]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-042",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 11.0% [1]."
+      },
+      {
+        "item_id": "vd-044",
+        "composite": 0.8682,
+        "token_f1": 0.8182,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, cross-reactivity with the C3 epimer was reported at 9.6% [3]."
+      },
+      {
+        "item_id": "vd-046",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 1.6% [1]."
+      },
+      {
+        "item_id": "vd-048",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 200 microlitres of serum [1]."
+      },
+      {
+        "item_id": "vd-050",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the protocol requires 200 microlitres of dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-052",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 50 microlitres of serum [3]."
+      },
+      {
+        "item_id": "vd-054",
+        "composite": 0.8857,
+        "token_f1": 0.8571,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the validated linear range was 2.7 to 200 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-056",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validated linear range was 2.9 to 200 ng/mL [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-058",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the validated linear range was 3.1 to 120 ng/mL [2]."
+      }
+    ]
+  },
+  "int4": {
+    "config_id": "int4",
+    "n": 30,
+    "exact_match": 0.43333333333333335,
+    "token_f1": 0.9001025141582418,
+    "citation_grounding": 0.8333333333333334,
+    "number_agreement": 0.9833333333333333,
+    "composite": 0.8808794647045421,
+    "composite_ci95": [
+      0.8316123091150337,
+      0.9228890487247531
+    ],
+    "judge_score": null,
+    "per_item": [
+      {
+        "item_id": "vd-000",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the inter-assay coefficient of variation was 8.0% for the CLIA protocol [3]."
+      },
+      {
+        "item_id": "vd-002",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The inter-assay coefficient of variation was 9.3% for the aptasensor protocol [3]."
+      },
+      {
+        "item_id": "vd-004",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, the inter-assay coefficient of variation was 6.8% for the HPLC protocol [3]."
+      },
+      {
+        "item_id": "vd-006",
+        "composite": 0.682,
+        "token_f1": 0.96,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 0.26 ng/mL in dried blood spot."
+      },
+      {
+        "item_id": "vd-008",
+        "composite": 0.6786,
+        "token_f1": 0.9524,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 1.08 ng/mL in serum."
+      },
+      {
+        "item_id": "vd-010",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 2.33 ng/mL in dried blood spot [1]."
+      },
+      {
+        "item_id": "vd-012",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 212 participants [2]."
+      },
+      {
+        "item_id": "vd-014",
+        "composite": 0.7842,
+        "token_f1": 0.6316,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 120 participants [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-016",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 48 participants [2]."
+      },
+      {
+        "item_id": "vd-018",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 94.0% with the CLIA workflow [3]."
+      },
+      {
+        "item_id": "vd-020",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 101.4% with the aptasensor workflow [3]."
+      },
+      {
+        "item_id": "vd-022",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, mean recovery for 25(OH)D3 was 96.4% with the HPLC workflow [2]."
+      },
+      {
+        "item_id": "vd-024",
+        "composite": 0.67,
+        "token_f1": 0.9333,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.98."
+      },
+      {
+        "item_id": "vd-026",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.96 [2]."
+      },
+      {
+        "item_id": "vd-028",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.93 [2]."
+      },
+      {
+        "item_id": "vd-030",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 40 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-032",
+        "composite": 0.55,
+        "token_f1": 0.6667,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 25"
+      },
+      {
+        "item_id": "vd-034",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, turnaround time was 18 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-036",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [2]."
+      },
+      {
+        "item_id": "vd-038",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-040",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 20 ng/mL [2]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-042",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 11.0% [1]."
+      },
+      {
+        "item_id": "vd-044",
+        "composite": 0.8682,
+        "token_f1": 0.8182,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, cross-reactivity with the C3 epimer was reported at 9.6% [3]."
+      },
+      {
+        "item_id": "vd-046",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 1.6% [1]."
+      },
+      {
+        "item_id": "vd-048",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 200 microlitres of serum [1]."
+      },
+      {
+        "item_id": "vd-050",
+        "composite": 0.775,
+        "token_f1": 0.8889,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5,
+        "prediction": "The protocol requires 140.0 microlitres of dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-052",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 50 microlitres of serum [3]."
+      },
+      {
+        "item_id": "vd-054",
+        "composite": 0.8857,
+        "token_f1": 0.8571,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the validated linear range was 2.7 to 200 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-056",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validated linear range was 2.9 to 200 ng/mL [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-058",
+        "composite": 0.6735,
+        "token_f1": 0.9412,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "The validated linear range was 3.1 to 120 ng/mL."
+      }
+    ]
+  },
+  "prefix": {
+    "config_id": "prefix",
+    "n": 30,
+    "exact_match": 0.5333333333333333,
+    "token_f1": 0.9040799409443819,
+    "citation_grounding": 1.0,
+    "number_agreement": 1.0,
+    "composite": 0.9335026400916387,
+    "composite_ci95": [
+      0.9049812699836001,
+      0.9597816205209083
+    ],
+    "judge_score": null,
+    "per_item": [
+      {
+        "item_id": "vd-000",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the inter-assay coefficient of variation was 8.0% for the CLIA protocol [3]."
+      },
+      {
+        "item_id": "vd-002",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The inter-assay coefficient of variation was 9.3% for the aptasensor protocol [3]."
+      },
+      {
+        "item_id": "vd-004",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, the inter-assay coefficient of variation was 6.8% for the HPLC protocol [3]."
+      },
+      {
+        "item_id": "vd-006",
+        "composite": 0.9034,
+        "token_f1": 0.8966,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the method achieved a limit of detection of 0.26 ng/mL in dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-008",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 1.08 ng/mL in serum [3]."
+      },
+      {
+        "item_id": "vd-010",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 2.33 ng/mL in dried blood spot [1]."
+      },
+      {
+        "item_id": "vd-012",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 212 participants [2]."
+      },
+      {
+        "item_id": "vd-014",
+        "composite": 0.7842,
+        "token_f1": 0.6316,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 120 participants [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-016",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 48 participants [2]."
+      },
+      {
+        "item_id": "vd-018",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 94.0% with the CLIA workflow [3]."
+      },
+      {
+        "item_id": "vd-020",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 101.4% with the aptasensor workflow [3]."
+      },
+      {
+        "item_id": "vd-022",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, mean recovery for 25(OH)D3 was 96.4% with the HPLC workflow [2]."
+      },
+      {
+        "item_id": "vd-024",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.98 [1]."
+      },
+      {
+        "item_id": "vd-026",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.96 [2]."
+      },
+      {
+        "item_id": "vd-028",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.93 [2]."
+      },
+      {
+        "item_id": "vd-030",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 40 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-032",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 25 minutes per sample [1]."
+      },
+      {
+        "item_id": "vd-034",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, turnaround time was 18 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-036",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [2]."
+      },
+      {
+        "item_id": "vd-038",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-040",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 20 ng/mL [2]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-042",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 11.0% [1]."
+      },
+      {
+        "item_id": "vd-044",
+        "composite": 0.8682,
+        "token_f1": 0.8182,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, cross-reactivity with the C3 epimer was reported at 9.6% [3]."
+      },
+      {
+        "item_id": "vd-046",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 1.6% [1]."
+      },
+      {
+        "item_id": "vd-048",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 200 microlitres of serum [1]."
+      },
+      {
+        "item_id": "vd-050",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the protocol requires 200 microlitres of dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-052",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 50 microlitres of serum [3]."
+      },
+      {
+        "item_id": "vd-054",
+        "composite": 0.8857,
+        "token_f1": 0.8571,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the validated linear range was 2.7 to 200 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-056",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validated linear range was 2.9 to 200 ng/mL [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-058",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the validated linear range was 3.1 to 120 ng/mL [2]."
+      }
+    ]
+  },
+  "ft1_5b": {
+    "config_id": "ft1_5b",
+    "n": 30,
+    "exact_match": 0.5,
+    "token_f1": 0.9134358474915751,
+    "citation_grounding": 0.9,
+    "number_agreement": 0.9833333333333333,
+    "composite": 0.9068794647045421,
+    "composite_ci95": [
+      0.866079975909024,
+      0.9429599838164932
+    ],
+    "judge_score": null,
+    "per_item": [
+      {
+        "item_id": "vd-000",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the inter-assay coefficient of variation was 8.0% for the CLIA protocol [3]."
+      },
+      {
+        "item_id": "vd-002",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The inter-assay coefficient of variation was 9.3% for the aptasensor protocol [3]."
+      },
+      {
+        "item_id": "vd-004",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, the inter-assay coefficient of variation was 6.8% for the HPLC protocol [3]."
+      },
+      {
+        "item_id": "vd-006",
+        "composite": 0.682,
+        "token_f1": 0.96,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 0.26 ng/mL in dried blood spot."
+      },
+      {
+        "item_id": "vd-008",
+        "composite": 0.6786,
+        "token_f1": 0.9524,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 1.08 ng/mL in serum."
+      },
+      {
+        "item_id": "vd-010",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 2.33 ng/mL in dried blood spot [1]."
+      },
+      {
+        "item_id": "vd-012",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 212 participants [2]."
+      },
+      {
+        "item_id": "vd-014",
+        "composite": 0.7842,
+        "token_f1": 0.6316,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 120 participants [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-016",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 48 participants [2]."
+      },
+      {
+        "item_id": "vd-018",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 94.0% with the CLIA workflow [3]."
+      },
+      {
+        "item_id": "vd-020",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 101.4% with the aptasensor workflow [3]."
+      },
+      {
+        "item_id": "vd-022",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, mean recovery for 25(OH)D3 was 96.4% with the HPLC workflow [2]."
+      },
+      {
+        "item_id": "vd-024",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.98 [1]."
+      },
+      {
+        "item_id": "vd-026",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.96 [2]."
+      },
+      {
+        "item_id": "vd-028",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.93 [2]."
+      },
+      {
+        "item_id": "vd-030",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 40 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-032",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 25 minutes per sample [1]."
+      },
+      {
+        "item_id": "vd-034",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, turnaround time was 18 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-036",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [2]."
+      },
+      {
+        "item_id": "vd-038",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-040",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 20 ng/mL [2]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-042",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 11.0% [1]."
+      },
+      {
+        "item_id": "vd-044",
+        "composite": 0.8682,
+        "token_f1": 0.8182,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, cross-reactivity with the C3 epimer was reported at 9.6% [3]."
+      },
+      {
+        "item_id": "vd-046",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 1.6% [1]."
+      },
+      {
+        "item_id": "vd-048",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 200 microlitres of serum [1]."
+      },
+      {
+        "item_id": "vd-050",
+        "composite": 0.775,
+        "token_f1": 0.8889,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5,
+        "prediction": "The protocol requires 140.0 microlitres of dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-052",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 50 microlitres of serum [3]."
+      },
+      {
+        "item_id": "vd-054",
+        "composite": 0.8857,
+        "token_f1": 0.8571,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the validated linear range was 2.7 to 200 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-056",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validated linear range was 2.9 to 200 ng/mL [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-058",
+        "composite": 0.6735,
+        "token_f1": 0.9412,
+        "citation_grounding": 0.0,
+        "number_agreement": 1.0,
+        "prediction": "The validated linear range was 3.1 to 120 ng/mL."
+      }
+    ]
+  },
+  "fp16 (open loop)": {
+    "config_id": "fp16 (open loop)",
+    "n": 30,
+    "exact_match": 0.5333333333333333,
+    "token_f1": 0.9040799409443819,
+    "citation_grounding": 1.0,
+    "number_agreement": 1.0,
+    "composite": 0.9335026400916387,
+    "composite_ci95": [
+      0.9049812699836001,
+      0.9597816205209083
+    ],
+    "judge_score": null,
+    "per_item": [
+      {
+        "item_id": "vd-000",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the inter-assay coefficient of variation was 8.0% for the CLIA protocol [3]."
+      },
+      {
+        "item_id": "vd-002",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The inter-assay coefficient of variation was 9.3% for the aptasensor protocol [3]."
+      },
+      {
+        "item_id": "vd-004",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, the inter-assay coefficient of variation was 6.8% for the HPLC protocol [3]."
+      },
+      {
+        "item_id": "vd-006",
+        "composite": 0.9034,
+        "token_f1": 0.8966,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the method achieved a limit of detection of 0.26 ng/mL in dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-008",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 1.08 ng/mL in serum [3]."
+      },
+      {
+        "item_id": "vd-010",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 2.33 ng/mL in dried blood spot [1]."
+      },
+      {
+        "item_id": "vd-012",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 212 participants [2]."
+      },
+      {
+        "item_id": "vd-014",
+        "composite": 0.7842,
+        "token_f1": 0.6316,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 120 participants [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-016",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 48 participants [2]."
+      },
+      {
+        "item_id": "vd-018",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 94.0% with the CLIA workflow [3]."
+      },
+      {
+        "item_id": "vd-020",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 101.4% with the aptasensor workflow [3]."
+      },
+      {
+        "item_id": "vd-022",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, mean recovery for 25(OH)D3 was 96.4% with the HPLC workflow [2]."
+      },
+      {
+        "item_id": "vd-024",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.98 [1]."
+      },
+      {
+        "item_id": "vd-026",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.96 [2]."
+      },
+      {
+        "item_id": "vd-028",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.93 [2]."
+      },
+      {
+        "item_id": "vd-030",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 40 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-032",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 25 minutes per sample [1]."
+      },
+      {
+        "item_id": "vd-034",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, turnaround time was 18 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-036",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [2]."
+      },
+      {
+        "item_id": "vd-038",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-040",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 20 ng/mL [2]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-042",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 11.0% [1]."
+      },
+      {
+        "item_id": "vd-044",
+        "composite": 0.8682,
+        "token_f1": 0.8182,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, cross-reactivity with the C3 epimer was reported at 9.6% [3]."
+      },
+      {
+        "item_id": "vd-046",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 1.6% [1]."
+      },
+      {
+        "item_id": "vd-048",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 200 microlitres of serum [1]."
+      },
+      {
+        "item_id": "vd-050",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the protocol requires 200 microlitres of dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-052",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 50 microlitres of serum [3]."
+      },
+      {
+        "item_id": "vd-054",
+        "composite": 0.8857,
+        "token_f1": 0.8571,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the validated linear range was 2.7 to 200 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-056",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validated linear range was 2.9 to 200 ng/mL [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-058",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the validated linear range was 3.1 to 120 ng/mL [2]."
+      }
+    ]
+  },
+  "fp16 + semantic cache": {
+    "config_id": "fp16 + semantic cache",
+    "n": 30,
+    "exact_match": 0.5333333333333333,
+    "token_f1": 0.9040799409443819,
+    "citation_grounding": 1.0,
+    "number_agreement": 1.0,
+    "composite": 0.9335026400916387,
+    "composite_ci95": [
+      0.9049812699836001,
+      0.9597816205209083
+    ],
+    "judge_score": null,
+    "per_item": [
+      {
+        "item_id": "vd-000",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the inter-assay coefficient of variation was 8.0% for the CLIA protocol [3]."
+      },
+      {
+        "item_id": "vd-002",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The inter-assay coefficient of variation was 9.3% for the aptasensor protocol [3]."
+      },
+      {
+        "item_id": "vd-004",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, the inter-assay coefficient of variation was 6.8% for the HPLC protocol [3]."
+      },
+      {
+        "item_id": "vd-006",
+        "composite": 0.9034,
+        "token_f1": 0.8966,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the method achieved a limit of detection of 0.26 ng/mL in dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-008",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 1.08 ng/mL in serum [3]."
+      },
+      {
+        "item_id": "vd-010",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The method achieved a limit of detection of 2.33 ng/mL in dried blood spot [1]."
+      },
+      {
+        "item_id": "vd-012",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 212 participants [2]."
+      },
+      {
+        "item_id": "vd-014",
+        "composite": 0.7842,
+        "token_f1": 0.6316,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 120 participants [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-016",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validation cohort included 48 participants [2]."
+      },
+      {
+        "item_id": "vd-018",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 94.0% with the CLIA workflow [3]."
+      },
+      {
+        "item_id": "vd-020",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Mean recovery for 25(OH)D3 was 101.4% with the aptasensor workflow [3]."
+      },
+      {
+        "item_id": "vd-022",
+        "composite": 0.875,
+        "token_f1": 0.8333,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, mean recovery for 25(OH)D3 was 96.4% with the HPLC workflow [2]."
+      },
+      {
+        "item_id": "vd-024",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.98 [1]."
+      },
+      {
+        "item_id": "vd-026",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.96 [2]."
+      },
+      {
+        "item_id": "vd-028",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Correlation with the reference method was r = 0.93 [2]."
+      },
+      {
+        "item_id": "vd-030",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 40 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-032",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Turnaround time was 25 minutes per sample [1]."
+      },
+      {
+        "item_id": "vd-034",
+        "composite": 0.86,
+        "token_f1": 0.8,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, turnaround time was 18 minutes per sample [3]."
+      },
+      {
+        "item_id": "vd-036",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [2]."
+      },
+      {
+        "item_id": "vd-038",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 30 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-040",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Sufficiency was defined as 25(OH)D above 20 ng/mL [2]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-042",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 11.0% [1]."
+      },
+      {
+        "item_id": "vd-044",
+        "composite": 0.8682,
+        "token_f1": 0.8182,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "According to the evidence provided, cross-reactivity with the C3 epimer was reported at 9.6% [3]."
+      },
+      {
+        "item_id": "vd-046",
+        "composite": 1.0,
+        "token_f1": 1.0,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Cross-reactivity with the C3 epimer was reported at 1.6% [1]."
+      },
+      {
+        "item_id": "vd-048",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 200 microlitres of serum [1]."
+      },
+      {
+        "item_id": "vd-050",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the protocol requires 200 microlitres of dried blood spot [3]."
+      },
+      {
+        "item_id": "vd-052",
+        "composite": 0.8706,
+        "token_f1": 0.8235,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the protocol requires 50 microlitres of serum [3]."
+      },
+      {
+        "item_id": "vd-054",
+        "composite": 0.8857,
+        "token_f1": 0.8571,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Based on the sources, the validated linear range was 2.7 to 200 ng/mL [1]."
+      },
+      {
+        "item_id": "vd-056",
+        "composite": 0.824,
+        "token_f1": 0.72,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The validated linear range was 2.9 to 200 ng/mL [3]. This is stated directly in the cited source."
+      },
+      {
+        "item_id": "vd-058",
+        "composite": 0.8522,
+        "token_f1": 0.7826,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The reported value is as follows: the validated linear range was 3.1 to 120 ng/mL [2]."
+      }
+    ]
+  }
+}

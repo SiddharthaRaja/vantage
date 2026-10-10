@@ -1,0 +1,16 @@
+# AWQ/GPTQ-style 4-bit. Markedly faster and markedly cheaper per token --
+# and in this simulation it is the configuration that fails the quality gate,
+# which is exactly the situation the gate exists to catch.
+type: simulated
+name: sim-7b-int4
+model: simulated-7b-int4-awq
+description: 7B, 4-bit AWQ quantisation
+decode_tokens_per_s: 620
+batch_constant: 24
+prefill_tokens_per_s: 27000
+max_batch: 48
+overhead_s: 0.012
+jitter: 0.11
+fidelity: 0.78
+seed: 11
+pricing: { kind: self_hosted, gpu_hourly_usd: 0.75, n_gpus: 1 }

@@ -1,0 +1,98 @@
+# The demo sweep: everything the harness can do, on the simulated backend, in
+# about a minute. `vantage demo` runs this. No GPU, no API key, no network.
+name: demo
+description: >
+  End-to-end demonstration against the simulated backend. Measures a
+  concurrency sweep, three quantisation profiles, a fine-tuned small model and
+  a semantic cache, scores every distinct model configuration for answer
+  quality, and computes the self-host vs API break-even point.
+workload: data/workload.sample.jsonl
+cooldown_s: 0.5
+
+slo:
+  ttft_p95_s: 1.0
+  total_p95_s: 8.0
+  max_error_rate: 0.01
+
+defaults:
+  max_tokens: 96
+  load:
+    mode: closed
+    n_requests: 40
+    warmup_requests: 6
+    seed: 7
+
+runs:
+  - id: fp16
+    group: fp16
+    label: 7B fp16
+    backend: sim.fp16
+    matrix:
+      load.concurrency: [1, 2, 4, 8, 16, 32, 64]
+
+  - id: int8
+    group: int8
+    label: 7B int8
+    backend: sim.int8
+    matrix:
+      load.concurrency: [4, 8, 16, 32]
+
+  - id: int4
+    group: int4
+    label: 7B int4 AWQ
+    backend: sim.int4
+    matrix:
+      load.concurrency: [4, 8, 16, 32]
+
+  - id: prefix
+    group: prefix
+    label: 7B fp16 + prefix cache
+    backend: sim.fp16-prefix-cache
+    matrix:
+      load.concurrency: [4, 8, 16, 32]
+
+  - id: ft1_5b
+    group: ft1_5b
+    label: 1.5B fine-tuned
+    backend: sim.ft-1_5b
+    matrix:
+      load.concurrency: [4, 8, 16, 32]
+
+  - id: fp16-open
+    group: fp16 (open loop)
+    label: 7B fp16, Poisson arrivals
+    backend: sim.fp16
+    # n_requests must be cleared, or the arrival schedule stops early and the
+    # high-rate points never actually offer high load.
+    load: { mode: open, distribution: poisson, duration_s: 5, warmup_requests: 4,
+            n_requests: null, max_in_flight: 512, seed: 7 }
+    matrix:
+      load.rate_qps: [4, 8, 16, 24, 32, 40, 52]
+
+  - id: fp16-semcache
+    group: fp16 + semantic cache
+    label: 7B fp16 + semantic cache
+    backend: sim.fp16
+    cache:
+      threshold: 0.92
+      embedder: hashing
+    load: { mode: closed, concurrency: 8, n_requests: 120, warmup_requests: 4 }
+
+quality:
+  enabled: true
+  baseline: fp16
+  max_drop: 0.02
+  concurrency: 8
+  max_tokens: 256
+  eval_file: data/eval.holdout.jsonl
+
+cache_analysis:
+  enabled: true
+  repeats: 5
+  paraphrase_rate: 0.6
+  quality_floor: 0.75
+  max_false_hit_rate: 0.02
+
+cost:
+  api_reference: openai.gpt-4o-mini
+  self_hosted_reference: sim.fp16

@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check src tests scripts finetune
+
+      - name: Tests
+        run: pytest -q --cov=vantage --cov-report=term-missing
+
+      # The point of this step: the benchmark pipeline itself is tested on every
+      # commit, against the simulated backend, with a quality gate that must
+      # pass. A change that breaks the measurement is a failed build, not a
+      # surprise three weeks later when the charts look wrong.
+      - name: Smoke-test the full pipeline
+        run: |
+          vantage doctor -b sim.fp16
+          vantage sweep -c configs/sweeps/quantization.yaml --results-dir /tmp/ci-results
+          test -f /tmp/ci-results/quantization/*/REPORT.md
+          test -f /tmp/ci-results/quantization/*/charts/quality_vs_latency.png
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vantage-report-py${{ matrix.python-version }}
+          path: /tmp/ci-results/**
+          if-no-files-found: ignore

@@ -1,0 +1,16 @@
+# A local vLLM server. Start it with:
+#   vllm serve Qwen/Qwen3-4B-Instruct \
+#     --port 8000 --max-model-len 8192 --gpu-memory-utilization 0.90 \
+#     --enable-prefix-caching
+type: vllm
+name: vllm-qwen3-4b
+model: Qwen/Qwen3-4B-Instruct
+base_url: ${VLLM_BASE_URL:-http://localhost:8000/v1}
+api_key_env: VLLM_API_KEY
+timeout_s: 180
+max_retries: 0
+pricing:
+  kind: self_hosted
+  gpu_hourly_usd: 0.75
+  n_gpus: 1
+  note: "set this to what your instance actually costs"
