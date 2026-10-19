@@ -1,0 +1,28 @@
+# Open loop on the rented GPU: where is the saturation cliff for the Vectora
+# workload? Raise the top rate if p95 is still inside the SLO at the last step.
+name: gpu-offered-load
+description: Open-loop (Poisson) offered-load sweep, Qwen3-4B-Instruct-2507 bf16 on vLLM, rented 24 GB GPU.
+workload: data/workload.vectora.jsonl
+cooldown_s: 10
+
+slo:
+  ttft_p95_s: 1.0
+  total_p95_s: 8.0
+
+defaults:
+  max_tokens: 192
+  load:
+    mode: open
+    distribution: poisson
+    duration_s: 60
+    warmup_requests: 16
+    max_in_flight: 512
+    seed: 7
+
+runs:
+  - id: bf16-open
+    group: bf16
+    label: Qwen3-4B bf16, Poisson arrivals
+    backend: vllm.qwen3-4b-2507
+    matrix:
+      load.rate_qps: [1, 2, 4, 6, 8, 12, 16]

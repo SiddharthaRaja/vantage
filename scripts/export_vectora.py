@@ -9,7 +9,7 @@ different prompt from the application is measuring a system nobody runs.
 
 Run it with Vectora's environment (it imports `vectora`), from anywhere:
 
-    python scripts/export_vectora.py --vectora ../Vectora --corpus qasper-sentiment
+    python scripts/export_vectora.py --vectora ../Vectora --corpus qasper-300
 
 Writes, next to each other in data/:
 
@@ -27,7 +27,8 @@ Choices worth knowing:
   work; real users do not type it.
 * QASPER's placeholder tokens (BIBREF12, INLINEFORM0, TABREF3, ...) are
   cleaned out of the context, matching Vectora's run-2 clean corpus.
-* Reference answers are the QASPER annotators' answers (from `notes`). They are
+* Reference answers are the QASPER annotators' answers (`reference_answers`,
+  or `notes` for older golden sets). They are
   short spans, so absolute token-F1 against a full prose answer is low; the
   quality gate compares configurations against each other, which is what it
   needs.
@@ -124,7 +125,11 @@ async def export(args: argparse.Namespace) -> None:
                 "question": question,
                 "context": context,
                 "prompt": prompt,
-                "reference_answer": gold_answer(case.notes),
+                "reference_answer": (
+                    clean(case.reference_answers[0])
+                    if getattr(case, "reference_answers", None)
+                    else gold_answer(case.notes)
+                ),
                 "reference_citations": ref_cites,
                 "source_ids": list(range(1, len(chunks) + 1)),
                 "meta": {
@@ -161,7 +166,7 @@ async def export(args: argparse.Namespace) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--vectora", required=True, help="Path to the Vectora repo")
-    ap.add_argument("--corpus", default="qasper-sentiment")
+    ap.add_argument("--corpus", default="qasper-300")
     ap.add_argument("--golden", default=None, help="Golden set (default: the corpus's own)")
     ap.add_argument("--top-k", type=int, default=6, help="Chunks per prompt (Vectora fast mode uses 6)")
     ap.add_argument("--eval-fraction", type=float, default=0.6)

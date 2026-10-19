@@ -1,0 +1,36 @@
+# The milestone run: one rented 24 GB GPU, vLLM, Qwen3-4B, the real Vectora
+# workload, client on a different machine (so client CPU and the GPU box do
+# not compete). Start only the bf16 server (port 8000; command in the
+# backend config), then:
+#   vantage sweep -c configs/sweeps/gpu-concurrency-bf16.yaml
+name: gpu-concurrency-bf16
+description: Closed-loop concurrency sweep, Qwen3-4B-Instruct-2507 bf16 on vLLM, rented 24 GB GPU, Vectora workload, remote client.
+workload: data/workload.vectora.jsonl
+cooldown_s: 5
+
+slo:
+  ttft_p95_s: 1.0
+  total_p95_s: 8.0
+
+defaults:
+  max_tokens: 192
+  load:
+    mode: closed
+    n_requests: 160
+    warmup_requests: 16
+    seed: 7
+
+runs:
+  - id: bf16
+    group: bf16
+    label: Qwen3-4B bf16 (vLLM)
+    backend: vllm.qwen3-4b-2507
+    matrix:
+      load.concurrency: [1, 2, 4, 8, 16, 32, 64, 128]
+
+quality:
+  enabled: false
+
+cost:
+  api_reference: openai.gpt-4o-mini
+  self_hosted_reference: vllm.qwen3-4b-2507

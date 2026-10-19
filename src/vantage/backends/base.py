@@ -43,6 +43,19 @@ class Pricing:
     n_gpus: int = 1
     note: str = ""
 
+    def __post_init__(self) -> None:
+        # ${VAR} expansion in YAML yields strings ("0.6"); coerce so the cost
+        # model multiplies numbers rather than repeating strings. Empty or zero
+        # means "not priced".
+        for name in ("input_usd_per_mtok", "output_usd_per_mtok", "gpu_hourly_usd"):
+            value = getattr(self, name)
+            if isinstance(value, str):
+                value = float(value) if value.strip() else None
+            if value is not None and float(value) == 0.0 and name == "gpu_hourly_usd":
+                value = None
+            setattr(self, name, None if value is None else float(value))
+        self.n_gpus = int(self.n_gpus)
+
 
 @dataclass
 class Health:

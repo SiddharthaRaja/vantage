@@ -1,0 +1,18 @@
+# The same model, AWQ int4 weights. Community quantisation (cyankiwi); check it
+# loads before the paid hour starts. Always on port 8001, bf16 on 8000. On the GPU box:
+#   vllm serve cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit --max-model-len 8192 \
+#     --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8001 --api-key $VLLM_API_KEY
+# vLLM detects the quantisation from the checkpoint's config.
+# Client: export VLLM_AWQ_BASE_URL=http://<gpu-box-ip>:8001/v1
+type: vllm
+name: vllm-qwen3-4b-awq
+model: cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit
+base_url: ${VLLM_AWQ_BASE_URL:-http://localhost:8001/v1}
+api_key_env: VLLM_API_KEY
+timeout_s: 300
+max_retries: 0
+pricing:
+  kind: self_hosted
+  gpu_hourly_usd: ${GPU_HOURLY_USD:-0.0}
+  n_gpus: 1
+  note: "set GPU_HOURLY_USD to the instance's real hourly price before running"
