@@ -1,0 +1,36 @@
+# Real hardware, real workload: how many concurrent Vectora users can one T4
+# serve on vLLM — the same sweep as t4-concurrency.yaml, so the two servers
+# can be compared directly.
+# Workload = Vectora's own questions, retrieved context and exact prompt
+# (scripts/export_vectora.py). vLLM batches continuously with no fixed slot
+# count, which is the difference this comparison is meant to show.
+name: t4-vllm-concurrency
+description: Closed-loop concurrency sweep, Qwen2.5-3B fp16 on vLLM (continuous batching, prefix caching), Colab T4, Vectora workload.
+workload: data/workload.vectora.jsonl
+cooldown_s: 5
+
+slo:
+  ttft_p95_s: 2.0
+  total_p95_s: 15.0
+
+defaults:
+  max_tokens: 192
+  load:
+    mode: closed
+    n_requests: 96
+    warmup_requests: 8
+    seed: 7
+
+runs:
+  - id: vllm-fp16
+    group: vllm-qwen25-3b
+    label: Qwen2.5-3B fp16 (vLLM, T4)
+    backend: vllm.qwen25-3b
+    matrix:
+      load.concurrency: [1, 2, 4, 8, 16, 32, 64]
+
+quality:
+  enabled: false
+
+cost:
+  self_hosted_reference: vllm.qwen25-3b

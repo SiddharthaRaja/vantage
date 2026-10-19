@@ -1,0 +1,27 @@
+# Does quantisation pay for itself on a T4? Same model at fp16, int8 (q8_0) and
+# 4-bit (q4_K_M), same concurrency, same Vectora workload, with the quality gate
+# comparing each against fp16 on the eval set.
+name: t4-quantization
+description: fp16 vs q8_0 vs q4_K_M, Qwen2.5-3B on Ollama, Colab T4, Vectora workload, quality-gated.
+workload: data/workload.vectora.jsonl
+cooldown_s: 5
+
+slo: { ttft_p95_s: 2.0, total_p95_s: 15.0 }
+
+defaults:
+  max_tokens: 192
+  load: { mode: closed, concurrency: 8, n_requests: 96, warmup_requests: 8, seed: 7 }
+
+runs:
+  - { id: fp16, group: fp16, label: Qwen2.5-3B fp16, backend: ollama.qwen25-3b-fp16 }
+  - { id: q8,   group: q8,   label: Qwen2.5-3B q8_0, backend: ollama.qwen25-3b-q8 }
+  - { id: q4,   group: q4,   label: Qwen2.5-3B q4_K_M, backend: ollama.qwen25-3b-q4 }
+
+quality:
+  enabled: true
+  baseline: fp16
+  max_drop: 0.02
+  eval_file: data/eval.vectora.jsonl
+
+cost:
+  self_hosted_reference: ollama.qwen25-3b-fp16

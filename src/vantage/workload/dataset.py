@@ -35,8 +35,14 @@ class WorkloadItem:
     reference_citations: list[int] = field(default_factory=list)
     source_ids: list[int] = field(default_factory=list)
     meta: dict[str, Any] = field(default_factory=dict)
+    #: The exact user message the application sends, when the workload was
+    #: exported from a real app. Takes precedence over the generic template,
+    #: so the benchmark measures the prompt that actually runs in production.
+    prompt_text: str = ""
 
     def prompt(self) -> str:
+        if self.prompt_text:
+            return self.prompt_text
         return f"Sources:\n{self.context}\n\nQuestion: {self.question}"
 
 
@@ -72,10 +78,17 @@ class Workload:
                     reference_citations=row.get("reference_citations", []),
                     source_ids=row.get("source_ids", []),
                     meta=row.get("meta", {}),
+                    prompt_text=row.get("prompt", ""),
                 )
             )
         if not items:
             raise ConfigError(f"{p} contains no usable rows")
+        # A workload exported from an application can ship that application's
+        # system prompt beside it as `<name>.system.txt`. An explicit `system`
+        # argument still wins.
+        sidecar = p.with_suffix(".system.txt")
+        if system is None and sidecar.exists():
+            system = sidecar.read_text(encoding="utf-8").strip() or None
         return cls(items=items, system=system or DEFAULT_SYSTEM, name=p.stem)
 
     # -- request construction ---------------------------------------------- #

@@ -1,0 +1,35 @@
+# Real hardware, real workload: how many concurrent Vectora users can one T4
+# serve, and where does adding users stop adding throughput?
+# Workload = Vectora's own questions, retrieved context and exact prompt
+# (scripts/export_vectora.py). Server: Ollama with 16 parallel slots, so
+# concurrency above 16 queues — the knee should show it.
+name: t4-concurrency
+description: Closed-loop concurrency sweep, Qwen2.5-3B fp16 on Ollama, Colab T4, Vectora workload.
+workload: data/workload.vectora.jsonl
+cooldown_s: 5
+
+slo:
+  ttft_p95_s: 2.0
+  total_p95_s: 15.0
+
+defaults:
+  max_tokens: 192
+  load:
+    mode: closed
+    n_requests: 96
+    warmup_requests: 8
+    seed: 7
+
+runs:
+  - id: fp16
+    group: qwen25-3b-fp16
+    label: Qwen2.5-3B fp16 (Ollama, T4)
+    backend: ollama.qwen25-3b-fp16
+    matrix:
+      load.concurrency: [1, 2, 4, 8, 16, 32]
+
+quality:
+  enabled: false
+
+cost:
+  self_hosted_reference: ollama.qwen25-3b-fp16

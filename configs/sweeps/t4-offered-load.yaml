@@ -1,0 +1,28 @@
+# Open loop: requests arrive at a fixed rate whether or not the server keeps up.
+# Finds the saturation cliff on a T4 for the Vectora workload.
+name: t4-offered-load
+description: Open-loop (Poisson) offered-load sweep, Qwen2.5-3B q4_K_M on Ollama, Colab T4.
+workload: data/workload.vectora.jsonl
+cooldown_s: 10
+
+slo:
+  ttft_p95_s: 2.0
+  total_p95_s: 15.0
+
+defaults:
+  max_tokens: 128
+  load:
+    mode: open
+    distribution: poisson
+    duration_s: 45
+    warmup_requests: 8
+    max_in_flight: 256
+    seed: 7
+
+runs:
+  - id: q4-open
+    group: q4
+    label: Qwen2.5-3B q4_K_M, Poisson arrivals
+    backend: ollama.qwen25-3b-q4
+    matrix:
+      load.rate_qps: [0.25, 0.5, 1, 1.5, 2, 3]

@@ -1,0 +1,15 @@
+# Qwen2.5-3B-Instruct on vLLM, fp16, on a T4. T4 has no bf16, hence --dtype half.
+#   vllm serve Qwen/Qwen2.5-3B-Instruct --dtype half --max-model-len 8192 \
+#     --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8000
+type: vllm
+name: vllm-qwen25-3b
+model: Qwen/Qwen2.5-3B-Instruct
+base_url: ${VLLM_BASE_URL:-http://localhost:8000/v1}
+api_key_env: VLLM_API_KEY
+timeout_s: 300
+max_retries: 0
+pricing:
+  kind: self_hosted
+  gpu_hourly_usd: 0.35
+  n_gpus: 1
+  note: "on-demand T4 list price (approx.); the Colab run itself was free. Replace before quoting cost."

@@ -1,0 +1,17 @@
+# Qwen2.5-3B-Instruct, q8_0 weights, served by Ollama on a Colab T4 (16 GB).
+# Start the server with a context window big enough for Vectora's prompts and
+# enough parallel slots to batch:
+#   OLLAMA_CONTEXT_LENGTH=8192 OLLAMA_NUM_PARALLEL=16 ollama serve
+# Without OLLAMA_CONTEXT_LENGTH, Ollama truncates long prompts silently.
+type: ollama
+name: ollama-qwen25-3b-q8
+model: qwen2.5:3b-instruct-q8_0
+base_url: ${OLLAMA_BASE_URL:-http://localhost:11434/v1}
+api_key_env: OLLAMA_API_KEY
+timeout_s: 300
+max_retries: 0
+pricing:
+  kind: self_hosted
+  gpu_hourly_usd: 0.35
+  n_gpus: 1
+  note: "on-demand T4 list price (approx.); the Colab run itself was free. Replace before quoting cost."
