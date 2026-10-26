@@ -443,8 +443,9 @@ print(open(f"{OUT}/SUMMARY.md").read()[:4000])
 
 def build() -> dict:
     cells = []
-    for kind, text in CELLS:
-        cell = {"cell_type": kind, "metadata": {}, "source": text.splitlines(keepends=True)}
+    for i, (kind, text) in enumerate(CELLS):
+        cell = {"cell_type": kind, "id": f"cell-{i:02d}", "metadata": {},
+                "source": text.splitlines(keepends=True)}
         if kind == "code":
             cell.update(execution_count=None, outputs=[])
         cells.append(cell)
