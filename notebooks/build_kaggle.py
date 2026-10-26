@@ -1,14 +1,21 @@
 """
-Build notebooks/vantage_kaggle.ipynb, the real-hardware run on Kaggle's 2x T4.
+Build the two Kaggle 2x T4 notebooks from one set of cells:
+
+    notebooks/vantage_kaggle.ipynb       the baseline: capacity, open loop, quality
+                                         gate, cross-check, cache
+    notebooks/vantage_kaggle_tune.ipynb  tuning: vLLM settings one at a time, with
+                                         server metrics (configs/sweeps/kaggle-t4-tune)
 
     python notebooks/build_kaggle.py
 
-The notebook is plain Python (no shell magics), so the same cells also run
-outside Kaggle in a dry-run mode against the simulator:
+The notebooks are plain Python (no shell magics), so the same cells also run
+outside Kaggle in a dry-run mode: the baseline against the simulator, the
+tuning run against tests/fake_vllm.py, which Vantage starts and stops itself:
 
     VANTAGE_DRY_RUN=1 VANTAGE_WORK=/tmp/vk VANTAGE_REPO_URL=. python notebooks/build_kaggle.py --run
+    VANTAGE_DRY_RUN=1 VANTAGE_WORK=/tmp/vk VANTAGE_REPO_URL=. python notebooks/build_kaggle.py --run --tune
 
-which is how the notebook is tested before it costs GPU time.
+which is how they are tested before they cost GPU time.
 """
 
 from __future__ import annotations
@@ -18,17 +25,18 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "vantage_kaggle.ipynb"
+NOTEBOOKS = {"base": HERE / "vantage_kaggle.ipynb", "tune": HERE / "vantage_kaggle_tune.ipynb"}
 
-CELLS: list[tuple[str, str]] = []
-
-
-def md(text: str) -> None:
-    CELLS.append(("markdown", text.strip("\n")))
+# (kind, text, only): only=None means the cell is in both notebooks
+CELLS: list[tuple[str, str, str | None]] = []
 
 
-def code(text: str) -> None:
-    CELLS.append(("code", text.strip("\n")))
+def md(text: str, only: str | None = None) -> None:
+    CELLS.append(("markdown", text.strip("\n"), only))
+
+
+def code(text: str, only: str | None = None) -> None:
+    CELLS.append(("code", text.strip("\n"), only))
 
 
 md("""
@@ -56,19 +64,44 @@ Everything lands in `/kaggle/working/<run>/` and `vantage_kaggle_results.zip`; s
 
 Each step records ok / failed / skipped in `steps.json`; one failure never stops the steps that do
 not depend on it.
-""")
+""", only="base")
+
+md("""
+# Vantage tuning: Kaggle 2x T4
+
+The baseline run (`vantage_kaggle.ipynb`) measured where latency breaks. This run explains why and
+tries to move it. Vantage starts vLLM with one setting changed at a time, drives the same load
+points, and scrapes vLLM's `/metrics` every second: KV-cache use, requests waiting inside the
+engine, preemptions, prefix-cache hits.
+
+| server | change | question |
+|---|---|---|
+| `base` | none (baseline settings), concurrency 1 to 64 | where does the KV cache fill, and does that match the knee? |
+| `noprefix` | prefix caching off | what is reusing the shared system prompt worth? |
+| `mem95` | `--gpu-memory-utilization 0.95` | does more KV cache move the knee? |
+| `seqs32` | `--max-num-seqs 32` | does capping the batch protect latency past the knee? |
+| `chunk512` | `--max-num-batched-tokens 512` | do smaller prefill chunks cut inter-token latency spikes? |
+| `awq` | AWQ int4 on T4 #1 | why AWQ is faster or slower than fp16 here |
+
+All settings are in `configs/sweeps/kaggle-t4-tune.yaml`; the exact command of every server is
+written to `servers.json`.
+
+**To run:** Accelerator **GPU T4 x2**, Internet **on**, then **Save Version, Save & Run All
+(Commit)**. About 2.5 hours. Send me `vantage_kaggle_tune_results.zip`.
+""", only="tune")
 
 md("## 1. Settings and helpers")
 code(r'''
 import datetime, glob, json, os, shutil, subprocess, sys, time, traceback, urllib.request
 
-DRY_RUN = os.environ.get("VANTAGE_DRY_RUN") == "1"     # simulator instead of GPUs (testing the notebook)
+NOTEBOOK = "__NOTEBOOK__"                              # "base" or "tune"; set by build_kaggle.py
+DRY_RUN = os.environ.get("VANTAGE_DRY_RUN") == "1"     # no GPUs: simulator / fake server (testing)
 WORK = os.environ.get("VANTAGE_WORK", "/kaggle/working")
 REPO_URL = os.environ.get("VANTAGE_REPO_URL", "https://github.com/SiddharthaRaja/vantage.git")
 # Not ".../vantage": a folder named like the package in the working directory
 # shadows the installed package when Python looks there first.
 REPO = f"{WORK}/vantage_repo"
-RUN = "kaggle_t4_" + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d_%H%M")
+RUN = ("kaggle_t4_tune_" if NOTEBOOK == "tune" else "kaggle_t4_") + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d_%H%M")
 OUT = f"{WORK}/{RUN}"
 os.makedirs(OUT, exist_ok=True)
 
@@ -178,9 +211,18 @@ md("""
 `--max-model-len 4096`: Vectora prompts are ~900 tokens with the system prompt, answers at most 256,
 so nothing is truncated; without a limit vLLM would reserve memory for the model's full 262k context.
 If a server does not come up, it is retried with `--enforce-eager`, then with the next vLLM version.
-""")
+""", only="base")
+
+md("""
+## 4. Pre-flight: which vLLM serves on a T4?
+
+Starts the fp16 server once, with the same fallbacks as the baseline run (`--enforce-eager`, then
+older vLLM versions), and stops it again. Whatever flag it needed is passed to every server in the
+tuning sweep through `VLLM_EXTRA`, so all variants differ only in the setting under test.
+""", only="tune")
 code(r'''
 SERVERS = {}
+VLLM_EXTRA = ""
 
 def _up(port):
     try:
@@ -222,8 +264,12 @@ def stop_servers():
     time.sleep(5)
 
 
-def start_servers():
+def start_servers(models=((None, 0, 8000), (None, 1, 8001))):
+    """Start one server per (model, gpu, port); fall back until one vLLM version serves."""
+    global VLLM_EXTRA
+    models = [(m or (FP16 if gpu == 0 else AWQ), gpu, port) for m, gpu, port in models]
     if DRY_RUN:
+        VLLM_EXTRA = ""
         return "simulator"
     attempts = [(VLLM_CANDIDATES[0], ())] + [(VLLM_CANDIDATES[0], ("--enforce-eager",))] + \
                [(v, ("--enforce-eager",)) for v in VLLM_CANDIDATES[1:]]
@@ -231,24 +277,39 @@ def start_servers():
     for spec, extra in attempts:
         if spec != current:
             install_vllm(spec); current = spec
-        launch(FP16, 0, 8000, extra)
-        launch(AWQ, 1, 8001, extra)
-        if wait_up([8000, 8001]):
-            return f"vllm {VLLM_VERSION} {' '.join(extra) or '(cuda graphs on)'}"
+        for model, gpu, port in models:
+            launch(model, gpu, port, extra)
+        ports = [port for _, _, port in models]
+        if wait_up(ports):
+            VLLM_EXTRA = " ".join(extra)
+            return f"vllm {VLLM_VERSION} {VLLM_EXTRA or '(cuda graphs on)'}"
         print(f"servers did not start with {spec} {extra}; last lines:")
-        tail(f"{OUT}/server_8000.log", 15); tail(f"{OUT}/server_8001.log", 15)
+        for port in ports:
+            tail(f"{OUT}/server_{port}.log", 15)
         stop_servers()
     raise RuntimeError("no vLLM version served on the T4s (see server_*.log)")
-
-run_step("servers", start_servers, needs=["install_vllm"])
 ''')
+
+code(r'''
+run_step("servers", start_servers, needs=["install_vllm"])
+''', only="base")
+
+code(r'''
+def preflight():
+    note = start_servers(models=[(FP16, 0, 8000)])
+    stop_servers()
+    os.environ["VLLM_EXTRA"] = VLLM_EXTRA        # read by ${VLLM_EXTRA:-} in kaggle-t4-tune.yaml
+    return note
+
+run_step("preflight", preflight, needs=["install_vllm"])
+''', only="tune")
 
 md("""
 ## 5. Is the whole prompt reaching the model?
 
 One real Vectora prompt to each server. The server's own count of prompt tokens should be ~900, and
 the two precisions should read the same number of tokens.
-""")
+""", only="base")
 code(r'''
 def ask(port, model, system, user, max_tokens=192):
     body = json.dumps({"model": model, "max_tokens": max_tokens, "temperature": 0,
@@ -278,7 +339,7 @@ def sanity():
     return f"prompt tokens {counts}"
 
 run_step("sanity", sanity, needs=["servers"])
-''')
+''', only="base")
 
 md("""
 ## 6. The sweeps
@@ -289,13 +350,20 @@ run folder as each sweep finishes.
 code(r'''
 SIM = {"vllm.qwen3-4b-2507-awq-t4": "sim.int4", "vllm.qwen3-4b-2507-t4": "sim.fp16"}
 
+FAKE = {"vllm serve Qwen/Qwen3-4B-Instruct-2507": f"{sys.executable} {REPO}/tests/fake_vllm.py --model Qwen/Qwen3-4B-Instruct-2507",
+        "vllm serve cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit": f"{sys.executable} {REPO}/tests/fake_vllm.py --model cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit"}
+
 def sweep_config(name):
     path = f"{REPO}/configs/sweeps/{name}.yaml"
     if not DRY_RUN:
         return path
-    text = open(path).read()                       # dry run: simulator, tiny loads
-    for real, sim in SIM.items():
-        text = text.replace(real, sim)
+    text = open(path).read()                       # dry run: no GPU, tiny loads
+    if "servers:" in text:                         # managed servers: a fake vLLM that Vantage starts
+        for real, fake in FAKE.items():
+            text = text.replace(real, fake)
+    else:                                          # servers started by the notebook: the simulator
+        for real, sim in SIM.items():
+            text = text.replace(real, sim)
     for a, b in [("n_requests: 160", "n_requests: 12"), ("n_requests: 96", "n_requests: 8"),
                  ("n_requests: 48", "n_requests: 4"), ("n_requests: 30", "n_requests: 3"),
                  ("duration_s: 60", "duration_s: 2"), ("cooldown_s: 10", "cooldown_s: 0"),
@@ -320,13 +388,17 @@ def sweep(name, timeout_h=4):
         g = json.load(open(gate))[0]
         return f"gate {g['verdict']}: delta {g['delta']:+.3f}, 95% CI {g['delta_ci95']}"
     return "done"
-
-run_step("kaggle-t4", lambda: sweep("kaggle-t4"), needs=["sanity"] if not DRY_RUN else ["setup"])
 ''')
+code(r'''
+run_step("kaggle-t4", lambda: sweep("kaggle-t4"), needs=["sanity"] if not DRY_RUN else ["setup"])
+''', only="base")
 code(r'''
 run_step("kaggle-t4-offered-load", lambda: sweep("kaggle-t4-offered-load", timeout_h=2),
          needs=["sanity"] if not DRY_RUN else ["setup"])
-''')
+''', only="base")
+code(r'''
+run_step("kaggle-t4-tune", lambda: sweep("kaggle-t4-tune", timeout_h=5), needs=["preflight"])
+''', only="tune")
 
 md("""
 ## 7. Cross-check against vLLM's own benchmark
@@ -335,7 +407,7 @@ Same server (fp16, port 8000), same input tokens: `scripts/vllm_bench_dataset.py
 chat template, so `vllm bench serve` sends exactly what Vantage sends. Compared at concurrency 1, 8
 and 32 with the request counts the sweep used. Agreement within ~10% on TTFT and inter-token latency
 means Vantage measures what vLLM measures; a bigger gap is a finding to explain.
-""")
+""", only="base")
 code(r'''
 BENCH_FLAGS = [
     ["--custom-output-len", "192", "--skip-chat-template"],
@@ -386,7 +458,7 @@ def crosscheck():
     return "written"
 
 run_step("crosscheck", crosscheck, needs=["kaggle-t4"])
-''')
+''', only="base")
 
 md("""
 ## 8. Semantic cache (CPU)
@@ -394,7 +466,7 @@ md("""
 Replays Vectora's questions, with paraphrases, through a cache at each similarity threshold. A false
 hit serves one question's answer to a different question; title-free QASPER questions like "What
 are the baselines?" repeat across papers with different answers.
-""")
+""", only="base")
 code(r'''
 def cache_sim():
     embedder = "hashing" if DRY_RUN else "st"
@@ -409,7 +481,7 @@ def cache_sim():
     return json.load(open(f"{OUT}/cache_sim.json")).get("recommended_threshold")
 
 run_step("cache_sim", cache_sim, needs=["setup"])
-''')
+''', only="base")
 
 md("## 9. Summary and the zip")
 code(r'''
@@ -417,7 +489,8 @@ def package():
     if SERVERS:
         stop_servers()
     sh("nvidia-smi", log=f"{OUT}/nvidia_smi_end.txt")
-    parts = [f"# Vantage on Kaggle 2x T4 ({RUN})", "",
+    title = "Vantage tuning on Kaggle 2x T4" if NOTEBOOK == "tune" else "Vantage on Kaggle 2x T4"
+    parts = [f"# {title} ({RUN})", "",
              f"vLLM {VLLM_VERSION}; total {(time.time() - T0) / 3600:.2f} h; dry run: {DRY_RUN}", "",
              "| step | status | note |", "|---|---|---|"]
     for k, v in STEPS.items():
@@ -425,7 +498,7 @@ def package():
     for f in ["sanity_check.txt"]:
         if os.path.exists(f"{OUT}/{f}"):
             parts += ["", "## Sanity check", "", "```", open(f"{OUT}/{f}").read()[:3000], "```"]
-    for name in ["kaggle-t4", "kaggle-t4-offered-load"]:
+    for name in ["kaggle-t4", "kaggle-t4-offered-load", "kaggle-t4-tune"]:
         if os.path.exists(f"{OUT}/{name}/REPORT.md"):
             parts += ["", "---", "", open(f"{OUT}/{name}/REPORT.md").read()]
     if os.path.exists(f"{OUT}/CROSSCHECK.md"):
@@ -433,7 +506,8 @@ def package():
     if os.path.exists(f"{OUT}/cache_sim.log"):
         parts += ["", "---", "", "# Semantic cache", "", "```", open(f"{OUT}/cache_sim.log").read()[-3000:], "```"]
     open(f"{OUT}/SUMMARY.md", "w").write("\n".join(parts) + "\n")
-    zip_path = shutil.make_archive(f"{WORK}/vantage_kaggle_results", "zip", WORK, RUN)
+    stem = "vantage_kaggle_tune_results" if NOTEBOOK == "tune" else "vantage_kaggle_results"
+    zip_path = shutil.make_archive(f"{WORK}/{stem}", "zip", WORK, RUN)
     return f"{zip_path} ({os.path.getsize(zip_path) / 1e6:.1f} MB)"
 
 run_step("package", package)
@@ -441,9 +515,13 @@ print(open(f"{OUT}/SUMMARY.md").read()[:4000])
 ''')
 
 
-def build() -> dict:
+def cells_for(name: str) -> list[tuple[str, str]]:
+    return [(kind, text.replace("__NOTEBOOK__", name)) for kind, text, only in CELLS if only in (None, name)]
+
+
+def build(name: str) -> dict:
     cells = []
-    for i, (kind, text) in enumerate(CELLS):
+    for i, (kind, text) in enumerate(cells_for(name)):
         cell = {"cell_type": kind, "id": f"cell-{i:02d}", "metadata": {},
                 "source": text.splitlines(keepends=True)}
         if kind == "code":
@@ -463,11 +541,12 @@ def build() -> dict:
 
 
 if __name__ == "__main__":
-    nb = build()
-    OUT.write_text(json.dumps(nb, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"wrote {OUT} ({len(nb['cells'])} cells)")
+    for name, path in NOTEBOOKS.items():
+        nb = build(name)
+        path.write_text(json.dumps(nb, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"wrote {path} ({len(nb['cells'])} cells)")
     if "--run" in sys.argv:          # execute the code cells in order (dry-run testing)
         scope: dict = {"__name__": "__main__"}
-        for kind, text in CELLS:
+        for kind, text in cells_for("tune" if "--tune" in sys.argv else "base"):
             if kind == "code":
                 exec(compile(text, "<notebook>", "exec"), scope)

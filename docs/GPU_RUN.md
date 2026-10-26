@@ -38,9 +38,25 @@ How it differs from the rented route, and what the report must say:
 - **vLLM version.** The notebook tries the newest vLLM, then older versions,
   until one serves on a T4; the version used is in `SUMMARY.md`.
 
-The notebook is plain Python, so it is tested without a GPU:
-`VANTAGE_DRY_RUN=1 VANTAGE_WORK=/tmp/vk VANTAGE_REPO_URL=. python notebooks/build_kaggle.py --run`
-runs every cell against the simulator.
+### Second Kaggle run: tuning (`notebooks/vantage_kaggle_tune.ipynb`)
+
+The baseline says where latency breaks; this run says why and tries to move
+it. `configs/sweeps/kaggle-t4-tune.yaml` declares six vLLM servers (the
+baseline settings, prefix caching off, memory 0.95, `--max-num-seqs 32`,
+`--max-num-batched-tokens 512`, and AWQ for comparison). Vantage starts each
+one itself (`src/vantage/servers.py`), drives the same load points, and stops
+it; the exact commands go into `servers.json`. Every run also records what
+vLLM reported on `/metrics` during it (`src/vantage/metrics/server.py`):
+KV-cache use, requests waiting inside the engine, preemptions, prefix-cache
+hit rate, server-side TTFT and queue time. The report adds a side-by-side
+table and a "What the server saw" table and chart. About 2.5 hours; same
+settings and steps as the baseline notebook.
+
+Both notebooks are plain Python, so they are tested without a GPU:
+`VANTAGE_DRY_RUN=1 VANTAGE_WORK=/tmp/vk VANTAGE_REPO_URL=. python notebooks/build_kaggle.py --run [--tune]`
+runs every cell, the baseline against the simulator and the tuning run
+against `tests/fake_vllm.py`, which Vantage starts and stops like the real
+server.
 
 ---
 

@@ -1,0 +1,99 @@
+# Tuning, on the Kaggle T4s. The baseline run (kaggle-t4) says WHERE latency
+# breaks; the server metrics say WHY (KV cache full, requests waiting,
+# preemptions). This sweep changes one vLLM setting at a time and measures the
+# same load points again, so each change is judged by what it does to the SLO.
+#
+# Vantage starts and stops each server itself (src/vantage/servers.py) and
+# writes the exact command into servers.json. Variants, all fp16 on T4 #0:
+#
+#   base      the baseline's settings, with metrics, plus low concurrency for
+#             the full diagnosis curve
+#   noprefix  prefix caching off: what reusing the shared system prompt is worth
+#   mem95     --gpu-memory-utilization 0.95: more KV cache blocks
+#   seqs32    --max-num-seqs 32: cap the running batch; more requests wait in
+#             the queue, but the ones running stay fast (ITL)
+#   chunk512  --max-num-batched-tokens 512: smaller prefill chunks, so a long
+#             new prompt stalls running decodes less (ITL p95), at some TTFT cost
+#
+# and AWQ int4 on T4 #1 at the high-load points, with metrics, to explain the
+# fp16-vs-AWQ difference (smaller weights leave more memory for KV cache).
+#
+# VLLM_EXTRA carries any flag the baseline run needed to start on a T4
+# (e.g. --enforce-eager); the notebook sets it.
+name: kaggle-t4-tune
+description: vLLM settings one at a time, Qwen3-4B fp16 on a Kaggle T4, Vectora workload, with server metrics.
+workload: data/workload.vectora.jsonl
+cooldown_s: 5
+
+slo:
+  ttft_p95_s: 2.0
+  total_p95_s: 15.0
+
+defaults:
+  max_tokens: 192
+  backend: vllm.qwen3-4b-2507-t4
+  load: { mode: closed, warmup_requests: 8, seed: 7 }
+
+servers:
+  base:
+    command: >-
+      vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
+      --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8000 ${VLLM_EXTRA:-}
+    env: { CUDA_VISIBLE_DEVICES: "0" }
+    health_url: http://127.0.0.1:8000/v1/models
+  noprefix:
+    command: >-
+      vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
+      --gpu-memory-utilization 0.90 --no-enable-prefix-caching --port 8000 ${VLLM_EXTRA:-}
+    env: { CUDA_VISIBLE_DEVICES: "0" }
+    health_url: http://127.0.0.1:8000/v1/models
+  mem95:
+    command: >-
+      vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
+      --gpu-memory-utilization 0.95 --enable-prefix-caching --port 8000 ${VLLM_EXTRA:-}
+    env: { CUDA_VISIBLE_DEVICES: "0" }
+    health_url: http://127.0.0.1:8000/v1/models
+  seqs32:
+    command: >-
+      vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
+      --gpu-memory-utilization 0.90 --enable-prefix-caching --max-num-seqs 32 --port 8000 ${VLLM_EXTRA:-}
+    env: { CUDA_VISIBLE_DEVICES: "0" }
+    health_url: http://127.0.0.1:8000/v1/models
+  chunk512:
+    command: >-
+      vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
+      --gpu-memory-utilization 0.90 --enable-prefix-caching --max-num-batched-tokens 512
+      --port 8000 ${VLLM_EXTRA:-}
+    env: { CUDA_VISIBLE_DEVICES: "0" }
+    health_url: http://127.0.0.1:8000/v1/models
+  awq:
+    command: >-
+      vllm serve cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit --dtype half --max-model-len 4096
+      --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8001 ${VLLM_EXTRA:-}
+    env: { CUDA_VISIBLE_DEVICES: "1" }
+    health_url: http://127.0.0.1:8001/v1/models
+
+runs:
+  # base: the whole curve, for the diagnosis
+  - { id: base, group: base, label: "fp16 base", server: base,
+      load: { n_requests: 48 }, matrix: { load.concurrency: [1, 2] } }
+  - { id: base, group: base, label: "fp16 base", server: base,
+      load: { n_requests: 96 }, matrix: { load.concurrency: [4, 8] } }
+  - { id: base, group: base, label: "fp16 base", server: base,
+      load: { n_requests: 160 }, matrix: { load.concurrency: [16, 32, 64] } }
+  # one change each, around and past the knee
+  - { id: noprefix, group: noprefix, label: "no prefix cache", server: noprefix,
+      load: { n_requests: 160 }, matrix: { load.concurrency: [8, 16, 32, 64] } }
+  - { id: mem95, group: mem95, label: "memory 0.95", server: mem95,
+      load: { n_requests: 160 }, matrix: { load.concurrency: [8, 16, 32, 64] } }
+  - { id: seqs32, group: seqs32, label: "max 32 sequences", server: seqs32,
+      load: { n_requests: 160 }, matrix: { load.concurrency: [8, 16, 32, 64] } }
+  - { id: chunk512, group: chunk512, label: "prefill chunks 512", server: chunk512,
+      load: { n_requests: 160 }, matrix: { load.concurrency: [8, 16, 32, 64] } }
+  # AWQ under the same metrics, to explain the precision comparison
+  - { id: awq, group: awq, label: "AWQ int4", server: awq, backend: vllm.qwen3-4b-2507-awq-t4,
+      load: { n_requests: 160 }, matrix: { load.concurrency: [8, 16, 32, 64] } }
+
+cost:
+  api_reference: openai.gpt-4o-mini
+  self_hosted_reference: vllm.qwen3-4b-2507-t4
