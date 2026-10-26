@@ -246,6 +246,8 @@ class RunSummary(BaseModel):
 
     cost: CostBreakdown = Field(default_factory=CostBreakdown)
     quality: dict[str, Any] | None = None
+    # what the server reported while this run was under load (metrics/server.py)
+    server: dict[str, Any] | None = None
 
 
 class QualitySummary(BaseModel):

@@ -177,6 +177,76 @@ def results_table(summaries: list[RunSummary]) -> str:
     return _table(headers, rows)
 
 
+def _load_label(s: RunSummary) -> str:
+    if s.params.get("mode") == "closed":
+        return f"c={s.params.get('concurrency')}"
+    if s.offered_qps:
+        return f"{s.offered_qps:g} qps"
+    return "--"
+
+
+def server_table(summaries: list[RunSummary]) -> str | None:
+    """What the server saw during each run, next to what the client saw."""
+    rows = []
+    for s in summaries:
+        v = s.server
+        if not v or not v.get("n_scrapes"):
+            continue
+        kv = v.get("kv_cache_usage_mean")
+        rows.append([
+            s.label,
+            _load_label(s),
+            _fmt(kv * 100 if kv is not None else None, ".0f") + ("%" if kv is not None else ""),
+            _fmt((v.get("kv_cache_usage_max") or 0) * 100 if v.get("kv_cache_usage_max") is not None else None,
+                 ".0f") + ("%" if v.get("kv_cache_usage_max") is not None else ""),
+            _fmt(v.get("running_max"), ".0f"),
+            _fmt(v.get("waiting_mean"), ".1f"),
+            _fmt(v.get("waiting_max"), ".0f"),
+            _fmt(v.get("preemptions"), "d"),
+            _fmt(v.get("prefix_cache_hit_rate"), ".0%"),
+            _fmt(v.get("server_queue_mean_s"), ".3f"),
+            _fmt(v.get("server_ttft_mean_s"), ".3f"),
+            _fmt(s.ttft.mean, ".3f"),
+        ])
+    if not rows:
+        return None
+    headers = ["config", "load", "KV mean", "KV max", "running max", "waiting mean", "waiting max",
+               "preempted", "prefix hit", "queue s (server)", "TTFT s (server)", "TTFT s (client)"]
+    return _table(headers, rows)
+
+
+def side_by_side_table(summaries: list[RunSummary]) -> str | None:
+    """The same load points across groups, one row per load point.
+
+    Each cell: TTFT p95 s / ITL p50 ms / goodput. Only load points that at
+    least two groups share are shown, since the point is the comparison.
+    """
+    groups: dict[str, dict[str, RunSummary]] = {}
+    for s in summaries:
+        groups.setdefault(str(s.params.get("group", s.label)), {})[_load_label(s)] = s
+    if len(groups) < 2:
+        return None
+    points = []
+    for g in groups.values():
+        for p in g:
+            if p not in points:
+                points.append(p)
+    rows = []
+    for p in points:
+        cells = [groups[g].get(p) for g in groups]
+        if sum(c is not None for c in cells) < 2:
+            continue
+        rows.append([p] + [
+            "--" if c is None else
+            f"{_fmt(c.ttft.p95, '.2f')} / {_fmt(c.itl.p50 * 1000 if c.itl.p50 is not None else None, '.0f')} / "
+            f"{c.goodput_ratio:.0%}"
+            for c in cells
+        ])
+    if not rows:
+        return None
+    return _table(["load"] + list(groups), rows)
+
+
 def quality_table(quality: dict[str, Any]) -> str:
     headers = ["config", "n", "composite", "token F1", "citation grounding", "number agreement"]
     rows = []
@@ -311,11 +381,32 @@ def build_markdown(
         "starts at dispatch. In closed-loop runs the two are the same by construction.\n"
     )
 
+    side = side_by_side_table(summaries)
+    if side:
+        parts.append("### Side by side\n")
+        parts.append(side + "\n")
+        parts.append("Each cell: TTFT p95 (s) / inter-token latency p50 (ms) / goodput.\n")
+
+    server = server_table(summaries)
+    if server:
+        parts.append("## What the server saw\n")
+        parts.append(server + "\n")
+        parts.append(
+            "Scraped from vLLM's `/metrics` every second during each run. **KV** is the share "
+            "of the KV cache in use: when it nears 100%, new requests wait (**waiting**) and "
+            "running ones can be **preempted** (evicted and recomputed later), which is where "
+            "tail latency comes from. **prefix hit** is the share of prompt tokens served from "
+            "cached prefixes (the shared system prompt). Server TTFT starts when vLLM receives "
+            "the request; the client's also includes the client and the HTTP hop, so the gap "
+            "between them is overhead outside the engine.\n"
+        )
+
     order = [
         ("throughput_vs_concurrency", "Throughput vs concurrency"),
         ("latency_vs_concurrency", "Latency vs concurrency"),
         ("latency_vs_offered_load", "Latency vs offered load (open loop)"),
         ("latency_percentiles", "TTFT percentiles"),
+        ("server_state_vs_load", "What the server saw"),
         ("quality_vs_latency", "Quality vs latency"),
         ("cost_per_1k_requests", "Cost per 1,000 requests"),
         ("cache_threshold_sweep", "Semantic cache threshold sweep"),

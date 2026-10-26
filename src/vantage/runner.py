@@ -12,6 +12,7 @@ from vantage.cache.semantic import CachedBackend, SemanticCache
 from vantage.logging import info
 from vantage.metrics.collector import summarize_run
 from vantage.metrics.cost import cost_for_summary
+from vantage.metrics.server import ServerScraper
 from vantage.models import SLO, GenResult, LoadConfig, RunSummary
 from vantage.workload.dataset import Workload
 from vantage.workload.generator import generate_load
@@ -30,6 +31,7 @@ class RunSpec:
     backend_overrides: dict[str, Any] = field(default_factory=dict)
     cache: dict[str, Any] | None = None
     params: dict[str, Any] = field(default_factory=dict)
+    server: str | None = None          # a managed server (servers.py) this run needs
 
 
 @dataclass
@@ -75,8 +77,17 @@ async def run_spec(
     if progress:
         info(f"[bold]{spec.id}[/bold] -> {spec.label or spec.backend}")
 
+    inner = getattr(backend, "inner", backend)
+    metrics_url = getattr(inner, "metrics_url", None)
+    trace = None
     async with backend:
-        run = await generate_load(backend, requests, spec.load, progress=progress)
+        if metrics_url:
+            interval = float(getattr(inner, "metrics_interval_s", 1.0))
+            async with ServerScraper(metrics_url, interval_s=interval) as scraper:
+                run = await generate_load(backend, requests, spec.load, progress=progress)
+            trace = scraper.trace
+        else:
+            run = await generate_load(backend, requests, spec.load, progress=progress)
 
     summary = summarize_run(
         run,
@@ -96,8 +107,11 @@ async def run_spec(
     )
     summary.cost = cost_for_summary(summary, backend.pricing())
 
-    inner = getattr(backend, "inner", backend)
     engine_stats = inner.engine_stats() if hasattr(inner, "engine_stats") else {}
+    if trace is not None:
+        summary.server = trace.summary()
+        engine_stats["server"] = summary.server
+        engine_stats["server_series"] = trace.series()
     if run.shed:
         summary.errors_by_kind.setdefault("client_backlog", run.shed)
 

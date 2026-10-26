@@ -28,6 +28,7 @@ from vantage.metrics.cost import break_even_qps
 from vantage.models import SLO, LoadConfig, QualitySummary, RunSummary
 from vantage.quality.harness import QualityComparison, compare_quality, run_quality_eval
 from vantage.runner import RunSpec, run_spec
+from vantage.servers import ManagedServer, ServerStartError, load_profiles
 from vantage.store import RunStore, environment_fingerprint
 from vantage.workload.dataset import Workload
 
@@ -105,7 +106,8 @@ def expand_runs(cfg: dict[str, Any]) -> list[RunSpec]:
                     group=resolved.get("group", base_id),
                     backend_overrides=backend_overrides,
                     cache=resolved.get("cache"),
-                    params=extra,
+                    params={**extra, **({"server": resolved["server"]} if resolved.get("server") else {})},
+                    server=resolved.get("server"),
                 )
             )
 
@@ -149,28 +151,97 @@ async def execute_sweep(
     }
     store.write_json("manifest.json", result.manifest)
 
+    profiles = load_profiles(cfg)
+    for spec in specs:
+        if spec.server and spec.server not in profiles:
+            raise ConfigError(f"run '{spec.id}' names server '{spec.server}', which is not under servers:")
+    if profiles and (cfg.get("quality") or {}).get("enabled", False):
+        raise ConfigError(
+            "a sweep that manages servers cannot also run the quality gate: the gate runs after "
+            "every load point, when the servers are already stopped. Gate in a separate sweep."
+        )
+
     info(f"[bold]sweep '{name}'[/bold]: {len(specs)} configurations -> {store.dir}")
 
     cooldown = float(cfg.get("cooldown_s", 1.0))
-    for i, spec in enumerate(specs, start=1):
-        info(f"({i}/{len(specs)}) {spec.id}")
-        outcome = await run_spec(spec, workload, slo=slo, progress=progress)
-        result.summaries.append(outcome.summary)
-        if outcome.engine_stats:
-            result.engine_stats[spec.id] = outcome.engine_stats
-        if save_raw:
-            store.append_jsonl(
-                "raw.jsonl",
-                [
-                    {**r.model_dump(exclude={"text"}), "config_id": spec.id}
-                    for r in outcome.results
-                    if not r.is_warmup
-                ],
-            )
-        store.write_json("summaries.json", [s.model_dump() for s in result.summaries])
-        if cooldown and i < len(specs):
-            await asyncio.sleep(cooldown)
+    current: ManagedServer | None = None
+    failed_servers: dict[str, str] = {}
+    server_log: dict[str, Any] = {}
+    try:
+        for i, spec in enumerate(specs, start=1):
+            info(f"({i}/{len(specs)}) {spec.id}")
+            if spec.server and spec.server in failed_servers:
+                warn(f"skipping {spec.id}: server '{spec.server}' did not start")
+                continue
+            if spec.server and (current is None or current.profile.name != spec.server):
+                if current is not None:
+                    await current.stop()
+                current = ManagedServer(profiles[spec.server], store.dir / f"server_{spec.server}.log")
+                info(f"starting server '{spec.server}': {current.profile.command}")
+                try:
+                    await current.start()
+                except ServerStartError as exc:
+                    failed_servers[spec.server] = str(exc)
+                    warn(str(exc))
+                    current = None
+                    continue
+                server_log[spec.server] = {
+                    "command": current.profile.command,
+                    "env": current.profile.env,
+                    "startup_s": round(current.startup_s or 0.0, 1),
+                }
+                store.write_json("servers.json", {"started": server_log, "failed": failed_servers})
+            await _one_run(spec, i, len(specs), workload, slo, progress, result, store, save_raw, cooldown)
+    finally:
+        if current is not None:
+            await current.stop()
+        if profiles:
+            store.write_json("servers.json", {"started": server_log, "failed": failed_servers})
 
+    if profiles and not result.summaries:
+        raise ConfigError(f"no server started: {failed_servers}")
+
+    await _after_runs(cfg, workload, specs, result, store)
+    return result
+
+
+async def _one_run(
+    spec: RunSpec,
+    i: int,
+    n: int,
+    workload: Workload,
+    slo: SLO,
+    progress: bool,
+    result: SweepResult,
+    store: RunStore,
+    save_raw: bool,
+    cooldown: float,
+) -> None:
+    outcome = await run_spec(spec, workload, slo=slo, progress=progress)
+    result.summaries.append(outcome.summary)
+    if outcome.engine_stats:
+        result.engine_stats[spec.id] = outcome.engine_stats
+    if save_raw:
+        store.append_jsonl(
+            "raw.jsonl",
+            [
+                {**r.model_dump(exclude={"text"}), "config_id": spec.id}
+                for r in outcome.results
+                if not r.is_warmup
+            ],
+        )
+    store.write_json("summaries.json", [s.model_dump() for s in result.summaries])
+    if cooldown and i < n:
+        await asyncio.sleep(cooldown)
+
+
+async def _after_runs(
+    cfg: dict[str, Any],
+    workload: Workload,
+    specs: list[RunSpec],
+    result: SweepResult,
+    store: RunStore,
+) -> None:
     # -- quality gate ------------------------------------------------------- #
     qcfg = cfg.get("quality") or {}
     if qcfg.get("enabled", False):
@@ -232,7 +303,6 @@ async def execute_sweep(
     store.write_json("summaries.json", [s.model_dump() for s in result.summaries])
     store.write_json("engine_stats.json", result.engine_stats)
     good(f"sweep complete: {store.dir}")
-    return result
 
 
 async def _run_quality(

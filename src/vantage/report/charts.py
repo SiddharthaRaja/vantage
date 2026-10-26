@@ -404,6 +404,48 @@ def cache_threshold_sweep(sweep: dict[str, Any], out: Path) -> Path | None:
     return _save(fig, out)
 
 
+def server_state_vs_load(summaries: list[RunSummary], out: Path) -> Path | None:
+    """KV-cache use and vLLM's own waiting queue against concurrency.
+
+    The latency chart shows where the curve bends; this shows why: the bend
+    should line up with the KV cache filling and requests starting to wait.
+    """
+    groups = {
+        k: sorted([s for s in v if s.params.get("concurrency") and s.server and s.server.get("n_scrapes")],
+                  key=lambda s: s.params["concurrency"])
+        for k, v in _group(summaries, mode="closed").items()
+    }
+    groups = {k: v for k, v in groups.items() if len(v) >= 3}
+    if not groups:
+        return None
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.4, 4.2))
+    all_x: set[int] = set()
+    for i, (name, runs) in enumerate(groups.items()):
+        xs = [r.params["concurrency"] for r in runs]
+        all_x.update(xs)
+        colour, marker = SERIES[i % len(SERIES)], MARKERS[i % len(MARKERS)]
+        kv = [(r.server.get("kv_cache_usage_mean") or 0.0) * 100 for r in runs]
+        kv_max = [(r.server.get("kv_cache_usage_max") or 0.0) * 100 for r in runs]
+        wait = [r.server.get("waiting_mean") or 0.0 for r in runs]
+        ax1.plot(xs, kv, marker=marker, markersize=6, linewidth=2, color=colour, label=f"{name} mean")
+        ax1.plot(xs, kv_max, marker=marker, markersize=4, linewidth=1.2, linestyle="--",
+                 color=colour, alpha=0.7, label=f"{name} max")
+        ax2.plot(xs, wait, marker=marker, markersize=6, linewidth=2, color=colour, label=name)
+    for ax in (ax1, ax2):
+        ax.set_xscale("log", base=2)
+        ax.set_xticks(sorted(all_x))
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{int(v)}"))
+    ax1.set_ylim(0, 105)
+    _style(ax1, "KV cache in use", "concurrent requests (log scale)", "% of KV cache",
+           "solid = mean during the run, dashed = peak")
+    _style(ax2, "Requests waiting inside vLLM", "concurrent requests (log scale)", "mean waiting requests",
+           "queued by the engine, not by the client")
+    ax1.legend(loc="upper left", fontsize=8)
+    ax2.legend(loc="upper left", fontsize=8)
+    return _save(fig, out)
+
+
 def render_all(
     summaries: list[RunSummary],
     charts_dir: Path,
@@ -416,6 +458,7 @@ def render_all(
         ("latency_vs_concurrency", lambda p: latency_vs_concurrency(summaries, p)),
         ("latency_vs_offered_load", lambda p: latency_vs_offered_load(summaries, p)),
         ("latency_percentiles", lambda p: latency_percentiles(summaries, p)),
+        ("server_state_vs_load", lambda p: server_state_vs_load(summaries, p)),
         ("cost_per_1k_requests", lambda p: cost_per_1k(summaries, p)),
         ("quality_vs_latency", lambda p: quality_vs_latency(summaries, p)),
     ]

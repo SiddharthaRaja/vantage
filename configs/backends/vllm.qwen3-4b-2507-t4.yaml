@@ -11,6 +11,7 @@ base_url: ${VLLM_BASE_URL:-http://localhost:8000/v1}
 api_key_env: VLLM_API_KEY
 timeout_s: 600
 max_retries: 0
+scrape_metrics: true      # poll vLLM's /metrics during each run (KV cache, queue, preemptions)
 pricing:
   kind: self_hosted
   gpu_hourly_usd: ${GPU_HOURLY_USD:-0.35}

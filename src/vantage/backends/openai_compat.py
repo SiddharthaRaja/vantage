@@ -46,6 +46,9 @@ class OpenAICompatBackend(Backend):
         headers: dict[str, str] | None = None,
         pricing: dict[str, Any] | None = None,
         config_id: str | None = None,
+        scrape_metrics: bool = False,
+        metrics_url: str | None = None,
+        metrics_interval_s: float = 1.0,
         **params: Any,
     ):
         super().__init__(name=name, config_id=config_id, model=model, **params)
@@ -55,6 +58,9 @@ class OpenAICompatBackend(Backend):
         self.max_retries = max_retries
         self.retry_backoff_s = retry_backoff_s
         self.extra_body = extra_body or {}
+        # vLLM's Prometheus endpoint, polled during each run (metrics/server.py).
+        self.metrics_url = (metrics_url or _metrics_url(self.base_url)) if scrape_metrics else None
+        self.metrics_interval_s = float(metrics_interval_s)
         self._pricing_cfg = pricing or {}
         self._client = httpx.AsyncClient(
             base_url=self.base_url,
@@ -175,3 +181,10 @@ class OpenAICompatBackend(Backend):
 
     async def aclose(self) -> None:
         await self._client.aclose()
+
+
+def _metrics_url(base_url: str) -> str:
+    # imported here: vantage.metrics imports the workload package, which imports backends
+    from vantage.metrics.server import metrics_url_for
+
+    return metrics_url_for(base_url)
