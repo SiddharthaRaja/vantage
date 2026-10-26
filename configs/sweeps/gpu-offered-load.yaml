@@ -15,6 +15,7 @@ defaults:
     mode: open
     distribution: poisson
     duration_s: 60
+    n_requests: null     # else the default of 32 ends a 16 req/s point after 2 s
     warmup_requests: 16
     max_in_flight: 512
     seed: 7

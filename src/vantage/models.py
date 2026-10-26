@@ -147,6 +147,12 @@ class LoadConfig(BaseModel):
             raise ValueError("open-loop load requires rate_qps")
         if self.mode == "closed" and self.concurrency < 1:
             raise ValueError("concurrency must be >= 1")
+        # A duration without an explicit request count means "run for this
+        # long". Without this, the n_requests default (32) silently ended every
+        # open-loop point after 32 arrivals: 8 s at 4 req/s, before any queue
+        # could build, which hid the saturation cliff the sweep exists to show.
+        if self.duration_s is not None and "n_requests" not in self.model_fields_set:
+            self.n_requests = None
         if self.n_requests is None and self.duration_s is None:
             raise ValueError("set n_requests or duration_s")
         return self

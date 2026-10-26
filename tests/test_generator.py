@@ -86,3 +86,17 @@ def test_goodput_falls_when_the_slo_is_impossible(tiny_workload):
     loose = summarize_run(run, "c", "sim", slo=SLO(ttft_p95_s=60, total_p95_s=60))
     assert strict.goodput_ratio == 0.0
     assert loose.goodput_ratio == 1.0
+
+
+def test_duration_alone_is_not_capped_by_the_request_default():
+    """An open-loop point given only a duration runs for that duration.
+
+    Regression: n_requests defaulted to 32 and won, so a 60 s point at 4 req/s
+    stopped after 8 s and no queue ever formed.
+    """
+    cfg = LoadConfig(mode="open", rate_qps=4, duration_s=60)
+    assert cfg.n_requests is None
+    both = LoadConfig(mode="open", rate_qps=4, duration_s=60, n_requests=30)
+    assert both.n_requests == 30          # an explicit count still caps
+    closed = LoadConfig(mode="closed", concurrency=2)
+    assert closed.n_requests == 32        # closed loop keeps its default
