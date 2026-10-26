@@ -1,0 +1,17 @@
+# The same model with AWQ int4 weights (community build), one Kaggle T4
+# (GPU 1, port 8001). On a T4 vLLM uses its plain AWQ kernels (the faster
+# Marlin kernels need compute capability 8.0). Started by the Kaggle notebook:
+#   CUDA_VISIBLE_DEVICES=1 vllm serve cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit --dtype half \
+#     --max-model-len 4096 --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8001
+type: vllm
+name: vllm-qwen3-4b-awq-t4
+model: cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit
+base_url: ${VLLM_AWQ_BASE_URL:-http://localhost:8001/v1}
+api_key_env: VLLM_API_KEY
+timeout_s: 600
+max_retries: 0
+pricing:
+  kind: self_hosted
+  gpu_hourly_usd: ${GPU_HOURLY_USD:-0.35}
+  n_gpus: 1
+  note: "assumed on-demand price for one T4; the Kaggle run itself was free"

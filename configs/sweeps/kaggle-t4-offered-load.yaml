@@ -1,0 +1,38 @@
+# Open loop on the Kaggle T4s: requests arrive at a fixed Poisson rate whatever
+# the server does, which is how the saturation cliff shows (closed loop hides
+# it). Rates are set for a T4: the knee is expected around 1-2 req/s.
+# Low rates run for a fixed number of requests (60 s would give only 15 at
+# 0.25 req/s); from 1 req/s each point runs for 60 s. `n_requests: null` matters:
+# the load default is 32 requests, which would end a 4 req/s point after 8 s,
+# before any queue builds.
+name: kaggle-t4-offered-load
+description: Open-loop (Poisson) offered load, Qwen3-4B fp16 vs AWQ int4 on vLLM, one Kaggle T4 each, Vectora workload.
+workload: data/workload.vectora.jsonl
+cooldown_s: 10
+
+slo:
+  ttft_p95_s: 2.0
+  total_p95_s: 15.0
+
+defaults:
+  max_tokens: 192
+  load:
+    mode: open
+    distribution: poisson
+    warmup_requests: 8
+    max_in_flight: 256
+    seed: 7
+
+runs:
+  - { id: fp16-open, group: fp16, label: "Qwen3-4B fp16 (T4), Poisson arrivals", backend: vllm.qwen3-4b-2507-t4,
+      load: { n_requests: 30, duration_s: null }, matrix: { load.rate_qps: [0.25, 0.5] } }
+  - { id: fp16-open, group: fp16, label: "Qwen3-4B fp16 (T4), Poisson arrivals", backend: vllm.qwen3-4b-2507-t4,
+      load: { n_requests: null, duration_s: 60 }, matrix: { load.rate_qps: [1, 1.5, 2, 3, 4] } }
+  - { id: awq-open, group: awq, label: "Qwen3-4B AWQ int4 (T4), Poisson arrivals", backend: vllm.qwen3-4b-2507-awq-t4,
+      load: { n_requests: 30, duration_s: null }, matrix: { load.rate_qps: [0.25, 0.5] } }
+  - { id: awq-open, group: awq, label: "Qwen3-4B AWQ int4 (T4), Poisson arrivals", backend: vllm.qwen3-4b-2507-awq-t4,
+      load: { n_requests: null, duration_s: 60 }, matrix: { load.rate_qps: [1, 1.5, 2, 3, 4] } }
+
+cost:
+  api_reference: openai.gpt-4o-mini
+  self_hosted_reference: vllm.qwen3-4b-2507-t4

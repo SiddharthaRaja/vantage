@@ -1,12 +1,58 @@
 # The real GPU run — runbook
 
+There are two routes. The **free route** (Kaggle, below) is the one being run
+first; the rented-GPU route after it is kept for a larger GPU later.
+
+## Free route: Kaggle 2x T4 (`notebooks/vantage_kaggle.ipynb`)
+
+One notebook, about 3 hours, no money. Qwen3-4B fp16 on T4 #0 (port 8000) and
+AWQ int4 on T4 #1 (port 8001), each with a whole GPU, driven by the qasper-300
+workload (`data/workload.vectora.jsonl`, 365 prompts). It runs, in order:
+
+1. `vantage sweep -c configs/sweeps/kaggle-t4.yaml`: closed-loop concurrency
+   1 to 64 for both precisions, cost per 1,000 requests, and the quality gate
+   (AWQ vs fp16 on `data/eval.references.jsonl`, 32 reference answers written
+   against the exact prompts of `data/eval.qasper-sentiment.jsonl`).
+2. `vantage sweep -c configs/sweeps/kaggle-t4-offered-load.yaml`: Poisson
+   arrivals from 0.25 to 4 req/s.
+3. The cross-check against `vllm bench serve` at concurrency 1, 8 and 32
+   (`CROSSCHECK.md`).
+4. `vantage cache-sim` on the CPU.
+
+**To run:** Kaggle, New Notebook, File, Import Notebook, pick
+`notebooks/vantage_kaggle.ipynb`. Settings: Accelerator GPU T4 x2, Internet on.
+Then Save Version, Save & Run All (Commit). Download
+`vantage_kaggle_results.zip` from the version's Output tab.
+
+How it differs from the rented route, and what the report must say:
+
+- **fp16, not bf16.** The T4 (compute capability 7.5) has no bf16.
+- **Plain AWQ kernels.** Marlin needs compute capability 8.0, so AWQ runs on
+  vLLM's older kernels; its speed-up is smaller than on a newer GPU.
+- **Client on the same machine.** The load generator shares the Kaggle VM's
+  CPU with the servers, so TTFT has no network time and some CPU contention.
+  The cross-check runs under the same conditions, so it still compares like
+  with like.
+- **Price.** Kaggle is free; cost figures use `GPU_HOURLY_USD` (default 0.35,
+  an assumed on-demand price for one T4). Say so next to every cost number.
+- **vLLM version.** The notebook tries the newest vLLM, then older versions,
+  until one serves on a T4; the version used is in `SUMMARY.md`.
+
+The notebook is plain Python, so it is tested without a GPU:
+`VANTAGE_DRY_RUN=1 VANTAGE_WORK=/tmp/vk VANTAGE_REPO_URL=. python notebooks/build_kaggle.py --run`
+runs every cell against the simulator.
+
+---
+
+## Rented route: one 24 GB GPU
+
 One rented 24 GB GPU (RTX 4090 or A10G), a few hours, a few dollars. Everything
 that can be done for free is done before the meter starts.
 
 **What comes out:** concurrency and offered-load curves for Qwen3-4B on vLLM
 (bf16 and AWQ int4) on the real Vectora workload, measured from a separate
 client machine; a cross-check against vLLM's own benchmark on the same box; and
-a quality-gated bf16-vs-AWQ comparison against hand-written references.
+a quality-gated bf16-vs-AWQ comparison against reference answers.
 
 ---
 
@@ -34,8 +80,8 @@ by `[n]`, `SKIP` if the sources don't answer it). Then:
 
 ```powershell
 python scripts\references.py merge
-git add data/workload.vectora.* data/eval.vectora.* data/eval.handwritten.* data/references_todo.csv
-git commit -m "Vectora workload and hand-written references"
+git add data/workload.vectora.* data/eval.vectora.* data/eval.references.*
+git commit -m "Vectora workload and reference answers"
 git push
 ```
 

@@ -1,0 +1,56 @@
+# The real run, on Kaggle's free 2x T4: Qwen3-4B fp16 on GPU 0, AWQ int4 on
+# GPU 1, each with a whole GPU to itself, driven by Vectora's real workload
+# (365 prompts exported from qasper-300).
+#
+# One sweep answers three questions:
+#   capacity  - closed-loop concurrency 1..64 per precision (knee, goodput)
+#   cost      - $ per 1,000 requests at each point, vs an API
+#   quality   - the gate: AWQ vs fp16 on the 32 reference answers
+#               (data/eval.references.jsonl), paired bootstrap, fail if the
+#               drop exceeds 0.02
+#
+# Load points run one at a time (cooldown between), so the idle server on the
+# other GPU does not compete with the measured one beyond sharing the host CPU.
+# Low concurrency gets fewer requests: at concurrency 1 each request takes
+# ~8-10 s on a T4, and 48 is enough for stable p50/p95.
+name: kaggle-t4
+description: Qwen3-4B-Instruct-2507 fp16 vs AWQ int4 on vLLM, one Kaggle T4 each, Vectora workload (qasper-300), quality-gated on 32 references.
+workload: data/workload.vectora.jsonl
+cooldown_s: 5
+
+slo:
+  ttft_p95_s: 2.0
+  total_p95_s: 15.0
+
+defaults:
+  max_tokens: 192
+  load:
+    mode: closed
+    warmup_requests: 8
+    seed: 7
+
+runs:
+  - { id: fp16, group: fp16, label: Qwen3-4B fp16 (T4), backend: vllm.qwen3-4b-2507-t4,
+      load: { n_requests: 48 },  matrix: { load.concurrency: [1, 2] } }
+  - { id: fp16, group: fp16, label: Qwen3-4B fp16 (T4), backend: vllm.qwen3-4b-2507-t4,
+      load: { n_requests: 96 },  matrix: { load.concurrency: [4, 8] } }
+  - { id: fp16, group: fp16, label: Qwen3-4B fp16 (T4), backend: vllm.qwen3-4b-2507-t4,
+      load: { n_requests: 160 }, matrix: { load.concurrency: [16, 32, 64] } }
+  - { id: awq, group: awq, label: Qwen3-4B AWQ int4 (T4), backend: vllm.qwen3-4b-2507-awq-t4,
+      load: { n_requests: 48 },  matrix: { load.concurrency: [1, 2] } }
+  - { id: awq, group: awq, label: Qwen3-4B AWQ int4 (T4), backend: vllm.qwen3-4b-2507-awq-t4,
+      load: { n_requests: 96 },  matrix: { load.concurrency: [4, 8] } }
+  - { id: awq, group: awq, label: Qwen3-4B AWQ int4 (T4), backend: vllm.qwen3-4b-2507-awq-t4,
+      load: { n_requests: 160 }, matrix: { load.concurrency: [16, 32, 64] } }
+
+quality:
+  enabled: true
+  baseline: fp16
+  max_drop: 0.02
+  eval_file: data/eval.references.jsonl
+  concurrency: 4
+  max_tokens: 256
+
+cost:
+  api_reference: openai.gpt-4o-mini
+  self_hosted_reference: vllm.qwen3-4b-2507-t4
