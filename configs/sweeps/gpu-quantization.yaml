@@ -1,6 +1,6 @@
 # Does AWQ int4 pay for itself? Same model, same concurrency, same workload;
 # the quality gate compares AWQ against bf16 on the held-out eval set with
-# hand-written references (data/eval.handwritten.jsonl, scripts/references.py).
+# reference answers (data/eval.references.jsonl, scripts/references.py).
 # Both servers run at once on the one 24 GB GPU (bf16 ~8 GB of weights, AWQ
 # ~2.5 GB), each with a share of memory, on ports 8000 and 8001:
 #   vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype bfloat16 --max-model-len 8192 \
@@ -12,7 +12,7 @@
 # the gpu-concurrency-* sweeps and QUALITY from this one.
 #   vantage sweep -c configs/sweeps/gpu-quantization.yaml
 name: gpu-quantization
-description: bf16 vs AWQ int4, Qwen3-4B-Instruct-2507 on vLLM, rented 24 GB GPU, quality-gated on hand-written references.
+description: bf16 vs AWQ int4, Qwen3-4B-Instruct-2507 on vLLM, rented 24 GB GPU, quality-gated on 32 reference answers.
 workload: data/workload.vectora.jsonl
 cooldown_s: 5
 
@@ -30,7 +30,7 @@ quality:
   enabled: true
   baseline: bf16
   max_drop: 0.02
-  eval_file: data/eval.handwritten.jsonl
+  eval_file: data/eval.references.jsonl
 
 cost:
   api_reference: openai.gpt-4o-mini

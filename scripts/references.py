@@ -1,5 +1,5 @@
 """
-Hand-written reference answers for the quality gate.
+Reference answers for the quality gate, written against the exact prompts.
 
 QASPER's annotator answers are short spans ("BiLSTM", "Yes"). Token F1
 between a span and a full cited paragraph is low for every configuration, so
@@ -11,7 +11,7 @@ Two steps:
 
     python scripts/references.py export       # -> data/references_todo.csv (40 rows)
     # open it in Excel/Sheets and fill `your_reference` for each row
-    python scripts/references.py merge        # -> data/eval.handwritten.jsonl
+    python scripts/references.py merge        # -> data/eval.references.jsonl
 
 How to write each reference (≈2 minutes a row):
 
@@ -86,7 +86,7 @@ def merge(source: Path, labels: Path, out: Path, min_rows: int) -> None:
             item = dict(item)
             item["reference_answer"] = ref
             item["reference_citations"] = sorted({int(n) for n in _CITE.findall(ref)})
-            item["meta"] = {**item.get("meta", {}), "reference_source": "handwritten",
+            item["meta"] = {**item.get("meta", {}), "reference_source": "written",
                             "qasper_answer": row.get("qasper_answer", "")}
             merged.append(item)
     if len(merged) < min_rows:
@@ -103,10 +103,10 @@ def merge(source: Path, labels: Path, out: Path, min_rows: int) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("cmd", choices=["export", "merge"])
-    ap.add_argument("--source", type=Path, default=DATA / "eval.vectora.jsonl",
-                    help="Rows to pick from (scripts/export_vectora.py output)")
+    ap.add_argument("--source", type=Path, default=DATA / "eval.qasper-sentiment.jsonl",
+                    help="Rows to pick from (an eval file from scripts/export_vectora.py)")
     ap.add_argument("--labels", type=Path, default=DATA / "references_todo.csv")
-    ap.add_argument("--out", type=Path, default=DATA / "eval.handwritten.jsonl")
+    ap.add_argument("--out", type=Path, default=DATA / "eval.references.jsonl")
     ap.add_argument("--n", type=int, default=40)
     ap.add_argument("--min-rows", type=int, default=30)
     args = ap.parse_args()

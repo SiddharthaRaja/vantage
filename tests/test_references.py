@@ -1,4 +1,4 @@
-"""Hand-written references: export picks a stable subset, merge replaces references."""
+"""Reference answers: export picks a stable subset, merge replaces references."""
 
 from __future__ import annotations
 
@@ -46,19 +46,19 @@ def test_export_is_stable_and_refuses_to_overwrite(tmp_path, source):
         refs.export(source, a, 4)
 
 
-def test_merge_uses_handwritten_answers_and_parses_citations(tmp_path, source):
+def test_merge_uses_written_answers_and_parses_citations(tmp_path, source):
     labels = tmp_path / "todo.csv"
     refs.export(source, labels, 4)
     rows = _fill(labels, {})
     ids = [r["id"] for r in rows]
     _fill(labels, {ids[0]: "They use X [1] and Y [2][1].", ids[1]: "SKIP", ids[2]: "Z [1]."})
-    out = tmp_path / "eval.handwritten.jsonl"
+    out = tmp_path / "eval.references.jsonl"
     refs.merge(source, labels, out, min_rows=2)
     merged = [json.loads(x) for x in out.read_text().splitlines()]
     assert [m["id"] for m in merged] == [ids[0], ids[2]]
     assert merged[0]["reference_answer"] == "They use X [1] and Y [2][1]."
     assert merged[0]["reference_citations"] == [1, 2]
-    assert merged[0]["meta"]["reference_source"] == "handwritten"
+    assert merged[0]["meta"]["reference_source"] == "written"
     assert out.with_suffix(".system.txt").read_text() == "SYS\n"
 
 
