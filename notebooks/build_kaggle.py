@@ -1,9 +1,9 @@
 """
 Build the two Kaggle 2x T4 notebooks from one set of cells:
 
-    notebooks/vantage_t4_baseline_v4.ipynb    the baseline: capacity, open loop, quality
+    notebooks/vantage_t4_baseline_v5.ipynb    the baseline: capacity, open loop, quality
                                          gate, cross-check, cache
-    notebooks/vantage_t4_tuning_v3.ipynb     tuning: vLLM settings one at a time, with
+    notebooks/vantage_t4_tuning_v4.ipynb     tuning: vLLM settings one at a time, with
                                          server metrics (configs/sweeps/kaggle-t4-tune)
 
     python notebooks/build_kaggle.py
@@ -34,7 +34,9 @@ HERE = Path(__file__).resolve().parent
 # end to end, but its load points shared one prompt order, so vLLM's prefix
 # cache was warm from the previous point (99% hits); v4 / tuning v3 clear it
 # before every point, and install vllm bench's extras for the cross-check.
-NOTEBOOKS = {"base": HERE / "vantage_t4_baseline_v4.ipynb", "tune": HERE / "vantage_t4_tuning_v3.ipynb"}
+# v5 / tuning v4: the cross-check compares Vantage's per-token latency with
+# vLLM's TPOT (same definition) instead of its pooled ITL.
+NOTEBOOKS = {"base": HERE / "vantage_t4_baseline_v5.ipynb", "tune": HERE / "vantage_t4_tuning_v4.ipynb"}
 
 # (kind, text, only): only=None means the cell is in both notebooks
 CELLS: list[tuple[str, str, str | None]] = []
@@ -49,7 +51,7 @@ def code(text: str, only: str | None = None) -> None:
 
 
 md("""
-# Vantage on real hardware: Kaggle 2x T4 (baseline v4)
+# Vantage on real hardware: Kaggle 2x T4 (baseline v5)
 
 Every Vantage number so far came from its simulator. This run replaces them with measurements of
 **Qwen3-4B-Instruct-2507** served by **vLLM**, driven by **Vectora's real workload** (365 prompts
@@ -69,16 +71,16 @@ exported from qasper-300, each sent exactly as Vectora sends it).
 
 **To run:** Settings: Accelerator **GPU T4 x2**, Internet **on**. Then **Save Version, Save & Run All
 (Commit)**, so it runs unattended and the output is kept. Expect about 3 hours.
-Everything lands in `/kaggle/working/<run>/` and `vantage_t4_baseline_v4_results.zip`; send me the zip.
+Everything lands in `/kaggle/working/<run>/` and `vantage_t4_baseline_v5_results.zip`; send me the zip.
 
 Each step records ok / failed / skipped in `steps.json`; one failure never stops the steps that do
 not depend on it.
 """, only="base")
 
 md("""
-# Vantage tuning: Kaggle 2x T4 (tuning v3)
+# Vantage tuning: Kaggle 2x T4 (tuning v4)
 
-The baseline run (`vantage_t4_baseline_v4.ipynb`) measured where latency breaks. This run explains why and
+The baseline run (`vantage_t4_baseline_v5.ipynb`) measured where latency breaks. This run explains why and
 tries to move it. Vantage starts vLLM with one setting changed at a time, drives the same load
 points, and scrapes vLLM's `/metrics` every second: KV-cache use, requests waiting inside the
 engine, preemptions, prefix-cache hits.
@@ -102,7 +104,7 @@ All settings are in `configs/sweeps/kaggle-t4-tune.yaml`; the exact command of e
 written to `servers.json`.
 
 **To run:** Accelerator **GPU T4 x2**, Internet **on**, then **Save Version, Save & Run All
-(Commit)**. About 2.5 hours. Send me `vantage_t4_tuning_v3_results.zip`.
+(Commit)**. About 2.5 hours. Send me `vantage_t4_tuning_v4_results.zip`.
 """, only="tune")
 
 md("## 1. Settings and helpers")
@@ -513,16 +515,21 @@ def crosscheck(sweep_name="kaggle-t4", group="fp16"):
             continue
         ms = lambda x: x * 1000 if x is not None else None  # noqa: E731
         num = lambda x: f"{x:,.1f}" if x is not None else "n/a"  # noqa: E731
+        # Vantage's "ITL" is each request's mean gap between tokens, which is
+        # what vLLM calls TPOT; vLLM's ITL pools every individual gap, a
+        # different statistic (they agree only when nothing interrupts decoding).
         pairs = [("TTFT p50 (ms)", ms(s["ttft"]["p50"]), v.get("median_ttft_ms")),
                  ("TTFT p99 (ms)", ms(s["ttft"]["p99"]), v.get("p99_ttft_ms")),
-                 ("ITL p50 (ms)", ms(s["itl"]["p50"]), v.get("median_itl_ms")),
+                 ("per-token latency p50 (ms) vs TPOT", ms(s["itl"]["p50"]), v.get("median_tpot_ms")),
                  ("output tok/s", s["output_tokens_per_s"], v.get("output_throughput"))]
         for metric, a, b in pairs:
             ratio = f"{a / b:.2f}" if a and b else "n/a"
             rows.append(f"| {c} | {metric} | {num(a)} | {num(b)} | {ratio} |")
     text = (f"# Cross-check: Vantage vs `vllm bench serve` (vLLM {VLLM_VERSION}, flags {used})\n\n"
-            "Same server, same input tokens. Throughput can differ where the two tools stop answers at "
-            "different lengths; per-token latency should not.\n\n" + "\n".join(rows) + "\n")
+            "Same server, same input tokens. Vantage's per-token latency is each request's mean gap "
+            "between tokens, compared with vLLM's TPOT (the same definition). TTFT p99 is the single "
+            "worst request or two at these sample sizes, and vllm bench has no warm-up, so tails "
+            "differ more than medians.\n\n" + "\n".join(rows) + "\n")
     open(f"{OUT}/CROSSCHECK.md", "w").write(text)
     print(text)
     return "written"
@@ -589,7 +596,7 @@ def package():
     if os.path.exists(f"{OUT}/cache_sim.log"):
         parts += ["", "---", "", "# Semantic cache", "", "```", open(f"{OUT}/cache_sim.log").read()[-3000:], "```"]
     open(f"{OUT}/SUMMARY.md", "w").write("\n".join(parts) + "\n")
-    stem = "vantage_t4_tuning_v3_results" if NOTEBOOK == "tune" else "vantage_t4_baseline_v4_results"
+    stem = "vantage_t4_tuning_v4_results" if NOTEBOOK == "tune" else "vantage_t4_baseline_v5_results"
     zip_path = shutil.make_archive(f"{WORK}/{stem}", "zip", WORK, RUN)
     return f"{zip_path} ({os.path.getsize(zip_path) / 1e6:.1f} MB)"
 

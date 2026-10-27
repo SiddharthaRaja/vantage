@@ -3,7 +3,7 @@
 There are two routes. The **free route** (Kaggle, below) is the one being run
 first; the rented-GPU route after it is kept for a larger GPU later.
 
-## Free route: Kaggle 2x T4 (`notebooks/vantage_t4_baseline_v4.ipynb`)
+## Free route: Kaggle 2x T4 (`notebooks/vantage_t4_baseline_v5.ipynb`)
 
 One notebook, about 3 hours, no money. Qwen3-4B fp16 on T4 #0 (port 8000) and
 AWQ int4 on T4 #1 (port 8001), each with a whole GPU, driven by the qasper-300
@@ -20,9 +20,9 @@ workload (`data/workload.vectora.jsonl`, 365 prompts). It runs, in order:
 4. `vantage cache-sim` on the CPU.
 
 **To run:** Kaggle, New Notebook, File, Import Notebook, pick
-`notebooks/vantage_t4_baseline_v4.ipynb`. Settings: Accelerator GPU T4 x2, Internet on.
+`notebooks/vantage_t4_baseline_v5.ipynb`. Settings: Accelerator GPU T4 x2, Internet on.
 Then Save Version, Save & Run All (Commit). Download
-`vantage_t4_baseline_v4_results.zip` from the version's Output tab.
+`vantage_t4_baseline_v5_results.zip` from the version's Output tab.
 
 How it differs from the rented route, and what the report must say:
 
@@ -38,7 +38,7 @@ How it differs from the rented route, and what the report must say:
 - **vLLM version.** The notebook tries the newest vLLM, then older versions,
   until one serves on a T4; the version used is in `SUMMARY.md`.
 
-### Second Kaggle run: tuning (`notebooks/vantage_t4_tuning_v3.ipynb`)
+### Second Kaggle run: tuning (`notebooks/vantage_t4_tuning_v4.ipynb`)
 
 The baseline says where latency breaks; this run says why and tries to move
 it. `configs/sweeps/kaggle-t4-tune.yaml` declares six vLLM servers (the
