@@ -93,7 +93,11 @@ class ManagedServer:
             stderr=subprocess.STDOUT,
             start_new_session=True,
         )
-        async with httpx.AsyncClient(timeout=3.0) as client:
+        # vLLM turns on bearer auth when VLLM_API_KEY is in its environment, so
+        # the health check sends whatever key the server was started with.
+        key = {**os.environ, **self.profile.env}.get("VLLM_API_KEY")
+        headers = {"Authorization": f"Bearer {key}"} if key else {}
+        async with httpx.AsyncClient(timeout=3.0, headers=headers) as client:
             while time.perf_counter() - t0 < self.profile.startup_timeout_s:
                 if self.proc.poll() is not None:
                     raise ServerStartError(
@@ -105,6 +109,13 @@ class ManagedServer:
                     if r.status_code == 200:
                         self.startup_s = time.perf_counter() - t0
                         return
+                    if r.status_code in (401, 403):
+                        # Up, but refusing us: waiting longer cannot help.
+                        await self.stop()
+                        raise ServerStartError(
+                            f"server '{self.profile.name}' is up but answers {r.status_code}: it requires an "
+                            "API key (VLLM_API_KEY) that the client does not send"
+                        )
                 except httpx.HTTPError:
                     pass
                 await asyncio.sleep(2.0)

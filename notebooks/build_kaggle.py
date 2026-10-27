@@ -1,9 +1,9 @@
 """
 Build the two Kaggle 2x T4 notebooks from one set of cells:
 
-    notebooks/vantage_t4_baseline_v2.ipynb    the baseline: capacity, open loop, quality
+    notebooks/vantage_t4_baseline_v3.ipynb    the baseline: capacity, open loop, quality
                                          gate, cross-check, cache
-    notebooks/vantage_t4_tuning_v1.ipynb     tuning: vLLM settings one at a time, with
+    notebooks/vantage_t4_tuning_v2.ipynb     tuning: vLLM settings one at a time, with
                                          server metrics (configs/sweeps/kaggle-t4-tune)
 
     python notebooks/build_kaggle.py
@@ -27,9 +27,11 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 # The version is in the file name, so each Kaggle import is traceable to the
 # notebook it came from. Bump it whenever a notebook changes in a way that
-# matters to a run (v1 of the baseline installed vLLM into Kaggle's Python and
-# failed; v2 isolates it).
-NOTEBOOKS = {"base": HERE / "vantage_t4_baseline_v2.ipynb", "tune": HERE / "vantage_t4_tuning_v1.ipynb"}
+# matters to a run. Baseline v1 installed vLLM into Kaggle's Python and it
+# crashed; v2 isolated it, and vLLM served, but the notebook had set
+# VLLM_API_KEY, so vLLM demanded a key the health check never sent and the run
+# waited out a working server; v3 never sets it and fails fast on a 401.
+NOTEBOOKS = {"base": HERE / "vantage_t4_baseline_v3.ipynb", "tune": HERE / "vantage_t4_tuning_v2.ipynb"}
 
 # (kind, text, only): only=None means the cell is in both notebooks
 CELLS: list[tuple[str, str, str | None]] = []
@@ -44,7 +46,7 @@ def code(text: str, only: str | None = None) -> None:
 
 
 md("""
-# Vantage on real hardware: Kaggle 2x T4 (baseline v2)
+# Vantage on real hardware: Kaggle 2x T4 (baseline v3)
 
 Every Vantage number so far came from its simulator. This run replaces them with measurements of
 **Qwen3-4B-Instruct-2507** served by **vLLM**, driven by **Vectora's real workload** (365 prompts
@@ -64,16 +66,16 @@ exported from qasper-300, each sent exactly as Vectora sends it).
 
 **To run:** Settings: Accelerator **GPU T4 x2**, Internet **on**. Then **Save Version, Save & Run All
 (Commit)**, so it runs unattended and the output is kept. Expect about 3 hours.
-Everything lands in `/kaggle/working/<run>/` and `vantage_t4_baseline_v2_results.zip`; send me the zip.
+Everything lands in `/kaggle/working/<run>/` and `vantage_t4_baseline_v3_results.zip`; send me the zip.
 
 Each step records ok / failed / skipped in `steps.json`; one failure never stops the steps that do
 not depend on it.
 """, only="base")
 
 md("""
-# Vantage tuning: Kaggle 2x T4 (tuning v1)
+# Vantage tuning: Kaggle 2x T4 (tuning v2)
 
-The baseline run (`vantage_t4_baseline_v2.ipynb`) measured where latency breaks. This run explains why and
+The baseline run (`vantage_t4_baseline_v3.ipynb`) measured where latency breaks. This run explains why and
 tries to move it. Vantage starts vLLM with one setting changed at a time, drives the same load
 points, and scrapes vLLM's `/metrics` every second: KV-cache use, requests waiting inside the
 engine, preemptions, prefix-cache hits.
@@ -91,12 +93,12 @@ All settings are in `configs/sweeps/kaggle-t4-tune.yaml`; the exact command of e
 written to `servers.json`.
 
 **To run:** Accelerator **GPU T4 x2**, Internet **on**, then **Save Version, Save & Run All
-(Commit)**. About 2.5 hours. Send me `vantage_t4_tuning_v1_results.zip`.
+(Commit)**. About 2.5 hours. Send me `vantage_t4_tuning_v2_results.zip`.
 """, only="tune")
 
 md("## 1. Settings and helpers")
 code(r'''
-import datetime, glob, json, os, shutil, subprocess, sys, time, traceback, urllib.request
+import datetime, glob, json, os, shutil, subprocess, sys, time, traceback, urllib.error, urllib.request
 
 NOTEBOOK = "__NOTEBOOK__"                              # "base" or "tune"; set by build_kaggle.py
 DRY_RUN = os.environ.get("VANTAGE_DRY_RUN") == "1"     # no GPUs: simulator / fake server (testing)
@@ -111,11 +113,17 @@ os.makedirs(OUT, exist_ok=True)
 
 FP16 = "Qwen/Qwen3-4B-Instruct-2507"
 AWQ = "cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit"
-VLLM_CANDIDATES = ["vllm", "vllm==0.10.2", "vllm==0.9.2"]   # first one that serves on a T4 wins
+# First one that serves on a T4 wins. Older vLLM needs the transformers of its
+# day (0.10.2 fails on today's Qwen2Tokenizer, 0.9.2 on a duplicate config name).
+VLLM_CANDIDATES = ["vllm", "vllm==0.10.2 transformers==4.56.2", "vllm==0.9.2 transformers==4.53.3"]
 CROSSCHECK = [(1, 48), (8, 96), (32, 160)]                  # (concurrency, requests), as in the sweep
 
-os.environ.update(VLLM_API_KEY="EMPTY", PYTHONUNBUFFERED="1",
-                  GPU_HOURLY_USD=os.environ.get("GPU_HOURLY_USD", "0.35"))
+# No VLLM_API_KEY: vLLM reads that variable and switches on bearer auth, so a
+# key set "for the client" made every server answer 401 (baseline v2 lost an
+# hour waiting on a server that was up). The client sends "EMPTY", which an
+# unauthenticated vLLM ignores.
+os.environ.pop("VLLM_API_KEY", None)
+os.environ.update(PYTHONUNBUFFERED="1", GPU_HOURLY_USD=os.environ.get("GPU_HOURLY_USD", "0.35"))
 STEPS = {}
 T0 = time.time()
 
@@ -215,7 +223,7 @@ def install_vllm(spec):
     shutil.rmtree(VENV, ignore_errors=True)
     if sh(f"{sys.executable} -m uv venv -q --python 3.12 {VENV}", log=log, timeout=900) != 0:
         raise RuntimeError("could not create the Python 3.12 environment (see vllm_install.log)")
-    if sh(f"{sys.executable} -m uv pip install -q --python {VENV}/bin/python '{spec}'", log=log, timeout=1800) != 0:
+    if sh(f"{sys.executable} -m uv pip install -q --python {VENV}/bin/python {spec}", log=log, timeout=1800) != 0:
         raise RuntimeError(f"installing {spec} failed (see vllm_install.log)")
     if not os.environ["PATH"].startswith(f"{VENV}/bin:"):
         os.environ["PATH"] = f"{VENV}/bin:" + os.environ["PATH"]
@@ -253,6 +261,10 @@ def _up(port):
     try:
         urllib.request.urlopen(f"http://127.0.0.1:{port}/v1/models", timeout=3)
         return True
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):     # up, but refusing us: say so instead of waiting 25 minutes
+            raise RuntimeError(f"server on port {port} answers {e.code}: it was started with an API key")
+        return False
     except Exception:
         return False
 
@@ -540,7 +552,7 @@ def package():
     if os.path.exists(f"{OUT}/cache_sim.log"):
         parts += ["", "---", "", "# Semantic cache", "", "```", open(f"{OUT}/cache_sim.log").read()[-3000:], "```"]
     open(f"{OUT}/SUMMARY.md", "w").write("\n".join(parts) + "\n")
-    stem = "vantage_t4_tuning_v1_results" if NOTEBOOK == "tune" else "vantage_t4_baseline_v2_results"
+    stem = "vantage_t4_tuning_v2_results" if NOTEBOOK == "tune" else "vantage_t4_baseline_v3_results"
     zip_path = shutil.make_archive(f"{WORK}/{stem}", "zip", WORK, RUN)
     return f"{zip_path} ({os.path.getsize(zip_path) / 1e6:.1f} MB)"
 

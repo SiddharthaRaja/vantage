@@ -119,6 +119,7 @@ defaults:
     type: vllm
     name: fake
     model: fake-model
+    api_key_env: VLLM_API_KEY
     base_url: http://127.0.0.1:{port}/v1
     scrape_metrics: true
     metrics_interval_s: 0.05
@@ -202,3 +203,45 @@ def test_report_shows_what_the_server_saw(tmp_path):
     capped8 = next(s for s in result.summaries if s.config_id == "capped[concurrency=8]")
     assert capped8.server["waiting_max"] >= 2          # 8 users, 4 slots
     assert json.loads((result.store.dir / "summaries.json").read_text())[0]["server"]["n_scrapes"] > 0
+
+
+def test_server_started_with_an_api_key_is_still_reached(tmp_path, monkeypatch):
+    """Regression: VLLM_API_KEY set for the client is inherited by the server,
+    which then requires it. The health check must send it, or it waits forever."""
+    monkeypatch.setenv("VLLM_API_KEY", "secret")
+    port = _free_port()
+    result = asyncio.run(execute_sweep(
+        _sweep(tmp_path, port, _server("keyed", port, ""), "  - { id: keyed, server: keyed }\n"),
+        results_dir=tmp_path / "r"))
+    assert result.summaries[0].n_ok == 12          # health check and requests both authorised
+
+
+def test_a_server_that_refuses_us_fails_fast(tmp_path, monkeypatch):
+    """Up but answering 401 is reported at once, not after the start-up timeout."""
+    import time as _time
+
+    monkeypatch.delenv("VLLM_API_KEY", raising=False)
+    port = _free_port()
+    servers = _server("keyed", port, "").replace("    startup_timeout_s: 20\n",
+                                                 "    startup_timeout_s: 60\n    env: { VLLM_API_KEY: s }\n")
+    path = _sweep(tmp_path, port, servers, "  - { id: keyed, server: keyed }\n")
+    # The profile's key reaches the server; hide it from the health check by
+    # overriding after the fact: the client side has no key at all.
+    from vantage import servers as srv
+    original = srv.ManagedServer.start
+
+    async def start_without_key(self):
+        self.profile.env = {**self.profile.env}
+        key = self.profile.env.pop("VLLM_API_KEY")
+        monkeypatch.setenv("VANTAGE_TEST_SERVER_KEY", key)
+        cmd = self.profile.command
+        self.profile.command = f"env VLLM_API_KEY={key} {cmd}"
+        return await original(self)
+
+    monkeypatch.setattr(srv.ManagedServer, "start", start_without_key)
+    t0 = _time.perf_counter()
+    with pytest.raises(ConfigError, match="no server started"):
+        asyncio.run(execute_sweep(path, results_dir=tmp_path / "r"))
+    assert _time.perf_counter() - t0 < 30            # not the 60 s timeout
+    failed = json.loads(next((tmp_path / "r").rglob("servers.json")).read_text())["failed"]
+    assert "answers 401" in failed["keyed"]

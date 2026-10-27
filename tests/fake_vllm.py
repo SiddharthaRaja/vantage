@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -26,6 +27,10 @@ ap.add_argument("--startup-delay", type=float, default=0.3)
 ap.add_argument("--fail", action="store_true", help="exit during start-up")
 args, _ = ap.parse_known_args()      # accept (and ignore) the rest of vllm serve's flags
 
+# Like vLLM: VLLM_API_KEY in the server's environment turns on bearer-token
+# auth for /v1 routes (/metrics stays open). Run 1 of the Kaggle notebook lost
+# an hour to this: the key was set for the client and the server inherited it.
+API_KEY = os.environ.get("VLLM_API_KEY")
 LOCK = threading.Lock()
 SLOTS = threading.Semaphore(args.max_num_seqs)
 STATE = {"running": 0, "waiting": 0, "prompt_tokens": 0, "generation_tokens": 0,
@@ -45,7 +50,15 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def _authorised(self) -> bool:
+        if API_KEY and self.path.startswith("/v1") and self.headers.get("Authorization") != f"Bearer {API_KEY}":
+            self._send(401, json.dumps({"error": "Unauthorized"}))
+            return False
+        return True
+
     def do_GET(self):
+        if not self._authorised():
+            return
         if self.path == "/v1/models":
             self._send(200, json.dumps({"data": [{"id": args.model}]}))
         elif self.path == "/metrics":
@@ -72,6 +85,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(404, "{}")
 
     def do_POST(self):
+        if not self._authorised():
+            return
         body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
         prompt = " ".join(m.get("content", "") for m in body.get("messages", []))
         n_prompt = max(1, len(prompt.split()))

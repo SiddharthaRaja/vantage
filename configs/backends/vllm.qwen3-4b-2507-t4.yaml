@@ -1,5 +1,5 @@
 # Qwen3-4B-Instruct-2507 on vLLM, fp16, one Kaggle T4 (GPU 0, port 8000).
-# The T4 has no bf16, so --dtype half. Started by notebooks/vantage_t4_baseline_v2.ipynb:
+# The T4 has no bf16, so --dtype half. Started by notebooks/vantage_t4_baseline_v3.ipynb:
 #   CUDA_VISIBLE_DEVICES=0 vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half \
 #     --max-model-len 4096 --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8000
 # Vectora prompts are ~900 tokens with the system prompt and answers <= 256, so
