@@ -1,9 +1,9 @@
 """
 Build the two Kaggle 2x T4 notebooks from one set of cells:
 
-    notebooks/vantage_t4_baseline_v3.ipynb    the baseline: capacity, open loop, quality
+    notebooks/vantage_t4_baseline_v4.ipynb    the baseline: capacity, open loop, quality
                                          gate, cross-check, cache
-    notebooks/vantage_t4_tuning_v2.ipynb     tuning: vLLM settings one at a time, with
+    notebooks/vantage_t4_tuning_v3.ipynb     tuning: vLLM settings one at a time, with
                                          server metrics (configs/sweeps/kaggle-t4-tune)
 
     python notebooks/build_kaggle.py
@@ -30,8 +30,11 @@ HERE = Path(__file__).resolve().parent
 # matters to a run. Baseline v1 installed vLLM into Kaggle's Python and it
 # crashed; v2 isolated it, and vLLM served, but the notebook had set
 # VLLM_API_KEY, so vLLM demanded a key the health check never sent and the run
-# waited out a working server; v3 never sets it and fails fast on a 401.
-NOTEBOOKS = {"base": HERE / "vantage_t4_baseline_v3.ipynb", "tune": HERE / "vantage_t4_tuning_v2.ipynb"}
+# waited out a working server; v3 never sets it and fails fast on a 401. v3 ran
+# end to end, but its load points shared one prompt order, so vLLM's prefix
+# cache was warm from the previous point (99% hits); v4 / tuning v3 clear it
+# before every point, and install vllm bench's extras for the cross-check.
+NOTEBOOKS = {"base": HERE / "vantage_t4_baseline_v4.ipynb", "tune": HERE / "vantage_t4_tuning_v3.ipynb"}
 
 # (kind, text, only): only=None means the cell is in both notebooks
 CELLS: list[tuple[str, str, str | None]] = []
@@ -46,7 +49,7 @@ def code(text: str, only: str | None = None) -> None:
 
 
 md("""
-# Vantage on real hardware: Kaggle 2x T4 (baseline v3)
+# Vantage on real hardware: Kaggle 2x T4 (baseline v4)
 
 Every Vantage number so far came from its simulator. This run replaces them with measurements of
 **Qwen3-4B-Instruct-2507** served by **vLLM**, driven by **Vectora's real workload** (365 prompts
@@ -66,16 +69,16 @@ exported from qasper-300, each sent exactly as Vectora sends it).
 
 **To run:** Settings: Accelerator **GPU T4 x2**, Internet **on**. Then **Save Version, Save & Run All
 (Commit)**, so it runs unattended and the output is kept. Expect about 3 hours.
-Everything lands in `/kaggle/working/<run>/` and `vantage_t4_baseline_v3_results.zip`; send me the zip.
+Everything lands in `/kaggle/working/<run>/` and `vantage_t4_baseline_v4_results.zip`; send me the zip.
 
 Each step records ok / failed / skipped in `steps.json`; one failure never stops the steps that do
 not depend on it.
 """, only="base")
 
 md("""
-# Vantage tuning: Kaggle 2x T4 (tuning v2)
+# Vantage tuning: Kaggle 2x T4 (tuning v3)
 
-The baseline run (`vantage_t4_baseline_v3.ipynb`) measured where latency breaks. This run explains why and
+The baseline run (`vantage_t4_baseline_v4.ipynb`) measured where latency breaks. This run explains why and
 tries to move it. Vantage starts vLLM with one setting changed at a time, drives the same load
 points, and scrapes vLLM's `/metrics` every second: KV-cache use, requests waiting inside the
 engine, preemptions, prefix-cache hits.
@@ -87,13 +90,19 @@ engine, preemptions, prefix-cache hits.
 | `mem95` | `--gpu-memory-utilization 0.95` | does more KV cache move the knee? |
 | `seqs32` | `--max-num-seqs 32` | does capping the batch protect latency past the knee? |
 | `chunk512` | `--max-num-batched-tokens 512` | do smaller prefill chunks cut inter-token latency spikes? |
-| `awq` | AWQ int4 on T4 #1 | why AWQ is faster or slower than fp16 here |
+| `awq` | AWQ int4 on T4 #1, concurrency 1 to 64 | why AWQ is faster or slower than fp16 here |
+
+Every load point starts with a **cold prefix cache**: baseline v3 drew each point's prompts in the
+same order, so a point re-sent the prompts the previous one had just cached (99% hits at AWQ c=2) and
+its first-token times were flattered. This run's `base` and `awq` curves replace those numbers.
+Then **the cross-check**: `vllm bench serve` against the same fp16 server, compared with the `base`
+points at concurrency 1, 8 and 32.
 
 All settings are in `configs/sweeps/kaggle-t4-tune.yaml`; the exact command of every server is
 written to `servers.json`.
 
 **To run:** Accelerator **GPU T4 x2**, Internet **on**, then **Save Version, Save & Run All
-(Commit)**. About 2.5 hours. Send me `vantage_t4_tuning_v2_results.zip`.
+(Commit)**. About 2.5 hours. Send me `vantage_t4_tuning_v3_results.zip`.
 """, only="tune")
 
 md("## 1. Settings and helpers")
@@ -225,6 +234,8 @@ def install_vllm(spec):
         raise RuntimeError("could not create the Python 3.12 environment (see vllm_install.log)")
     if sh(f"{sys.executable} -m uv pip install -q --python {VENV}/bin/python {spec}", log=log, timeout=1800) != 0:
         raise RuntimeError(f"installing {spec} failed (see vllm_install.log)")
+    # vllm bench serve needs the bench extras (pandas, datasets) for --dataset-name custom
+    sh(f"{sys.executable} -m uv pip install -q --python {VENV}/bin/python pandas datasets", log=log, timeout=900)
     if not os.environ["PATH"].startswith(f"{VENV}/bin:"):
         os.environ["PATH"] = f"{VENV}/bin:" + os.environ["PATH"]
     VLLM_VERSION = subprocess.run([f"{VENV}/bin/python", "-c", "import vllm; print(vllm.__version__)"],
@@ -270,7 +281,8 @@ def _up(port):
 
 
 def launch(model, gpu, port, extra=()):
-    env = {**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu)}
+    # dev mode exposes /reset_prefix_cache, which Vantage calls before each load point
+    env = {**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu), "VLLM_SERVER_DEV_MODE": "1"}
     log = open(f"{OUT}/server_{port}.log", "a")
     cmd = ["vllm", "serve", model, "--dtype", "half", "--max-model-len", "4096",
            "--gpu-memory-utilization", "0.90", "--enable-prefix-caching", "--port", str(port), *extra]
@@ -442,14 +454,17 @@ code(r'''
 run_step("kaggle-t4-tune", lambda: sweep("kaggle-t4-tune", timeout_h=5), needs=["preflight"])
 ''', only="tune")
 
+
 md("""
 ## 7. Cross-check against vLLM's own benchmark
 
 Same server (fp16, port 8000), same input tokens: `scripts/vllm_bench_dataset.py` applies the model's
 chat template, so `vllm bench serve` sends exactly what Vantage sends. Compared at concurrency 1, 8
 and 32 with the request counts the sweep used. Agreement within ~10% on TTFT and inter-token latency
-means Vantage measures what vLLM measures; a bigger gap is a finding to explain.
-""", only="base")
+means Vantage measures what vLLM measures; a bigger gap is a finding to explain. In the tuning
+run the sweep has stopped its servers, so the fp16 server is started once more with the baseline
+settings and compared with the sweep's `base` points; the prefix cache is cleared before each run.
+""")
 code(r'''
 BENCH_FLAGS = [
     ["--custom-output-len", "192", "--skip-chat-template"],
@@ -469,7 +484,15 @@ def vllm_bench(c, n):
     raise RuntimeError("vllm bench serve failed with every flag set (see vllm_bench.log)")
 
 
-def crosscheck():
+def reset_cache(port=8000):
+    try:
+        urllib.request.urlopen(urllib.request.Request(f"http://127.0.0.1:{port}/reset_prefix_cache", method="POST"), timeout=30)
+        return True
+    except Exception:
+        return False
+
+
+def crosscheck(sweep_name="kaggle-t4", group="fp16"):
     if DRY_RUN:
         return "skipped in dry run"
     rc = sh(f"{sys.executable} scripts/vllm_bench_dataset.py --model {FP16}", log=f"{OUT}/vllm_bench.log", cwd=REPO)
@@ -479,12 +502,13 @@ def crosscheck():
         rc = sh(f"{VENV}/bin/python scripts/vllm_bench_dataset.py --model {FP16}", log=f"{OUT}/vllm_bench.log", cwd=REPO)
     if rc != 0:
         raise RuntimeError("could not build the vllm bench dataset")
-    ours = {s["config_id"]: s for s in json.load(open(f"{OUT}/kaggle-t4/summaries.json"))}
+    ours = {s["config_id"]: s for s in json.load(open(f"{OUT}/{sweep_name}/summaries.json"))}
     rows = ["| concurrency | metric | Vantage | vllm bench | Vantage / vllm |", "|---|---|---|---|---|"]
     used = None
     for c, n in CROSSCHECK:
+        reset_cache()                     # the same cold start Vantage's points get
         v, used = vllm_bench(c, n)
-        s = ours.get(f"fp16[concurrency={c}]")
+        s = ours.get(f"{group}[concurrency={c}]")
         if not s:
             continue
         ms = lambda x: x * 1000 if x is not None else None  # noqa: E731
@@ -503,8 +527,21 @@ def crosscheck():
     print(text)
     return "written"
 
+''')
+code(r'''
 run_step("crosscheck", crosscheck, needs=["kaggle-t4"])
 ''', only="base")
+
+code(r'''
+def crosscheck_tune():
+    start_servers(models=[(FP16, 0, 8000)])
+    try:
+        return crosscheck("kaggle-t4-tune", "base")
+    finally:
+        stop_servers()
+
+run_step("crosscheck", crosscheck_tune, needs=["kaggle-t4-tune"])
+''', only="tune")
 
 md("""
 ## 8. Semantic cache (CPU)
@@ -552,7 +589,7 @@ def package():
     if os.path.exists(f"{OUT}/cache_sim.log"):
         parts += ["", "---", "", "# Semantic cache", "", "```", open(f"{OUT}/cache_sim.log").read()[-3000:], "```"]
     open(f"{OUT}/SUMMARY.md", "w").write("\n".join(parts) + "\n")
-    stem = "vantage_t4_tuning_v2_results" if NOTEBOOK == "tune" else "vantage_t4_baseline_v3_results"
+    stem = "vantage_t4_tuning_v3_results" if NOTEBOOK == "tune" else "vantage_t4_baseline_v4_results"
     zip_path = shutil.make_archive(f"{WORK}/{stem}", "zip", WORK, RUN)
     return f"{zip_path} ({os.path.getsize(zip_path) / 1e6:.1f} MB)"
 

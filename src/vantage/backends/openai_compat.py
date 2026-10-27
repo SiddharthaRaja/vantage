@@ -49,6 +49,7 @@ class OpenAICompatBackend(Backend):
         scrape_metrics: bool = False,
         metrics_url: str | None = None,
         metrics_interval_s: float = 1.0,
+        reset_prefix_cache: bool = False,
         **params: Any,
     ):
         super().__init__(name=name, config_id=config_id, model=model, **params)
@@ -61,6 +62,10 @@ class OpenAICompatBackend(Backend):
         # vLLM's Prometheus endpoint, polled during each run (metrics/server.py).
         self.metrics_url = (metrics_url or _metrics_url(self.base_url)) if scrape_metrics else None
         self.metrics_interval_s = float(metrics_interval_s)
+        # Clear vLLM's prefix cache before each run (needs VLLM_SERVER_DEV_MODE=1
+        # on the server). Load points draw prompts in the same seeded order, so
+        # without this a point re-sends prompts the previous point just cached.
+        self.reset_prefix_cache_enabled = bool(reset_prefix_cache)
         self._pricing_cfg = pricing or {}
         self._client = httpx.AsyncClient(
             base_url=self.base_url,
@@ -165,6 +170,15 @@ class OpenAICompatBackend(Backend):
             return Health(ok=True, detail=f"{len(names)} model(s) served", model=self.model)
         except Exception as exc:  # noqa: BLE001
             return Health(ok=False, detail=f"{type(exc).__name__}: {exc}")
+
+    async def reset_prefix_cache(self) -> bool:
+        """POST /reset_prefix_cache on the server root; True if the server did it."""
+        root = self.base_url[: -len("/v1")] if self.base_url.endswith("/v1") else self.base_url
+        try:
+            r = await self._client.post(root + "/reset_prefix_cache", timeout=30.0)
+            return r.status_code == 200
+        except httpx.HTTPError:
+            return False
 
     def pricing(self) -> Pricing:
         cfg = self._pricing_cfg

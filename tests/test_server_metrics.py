@@ -245,3 +245,18 @@ def test_a_server_that_refuses_us_fails_fast(tmp_path, monkeypatch):
     assert _time.perf_counter() - t0 < 30            # not the 60 s timeout
     failed = json.loads(next((tmp_path / "r").rglob("servers.json")).read_text())["failed"]
     assert "answers 401" in failed["keyed"]
+
+
+@pytest.mark.parametrize("dev_mode, expected", [("1", True), ("0", False)])
+def test_prefix_cache_is_reset_before_each_point(tmp_path, monkeypatch, dev_mode, expected):
+    """Regression: load points draw prompts in one seeded order, so without a
+    reset c=2 re-sent c=1's prompts and vLLM answered them from its prefix
+    cache (99% hits on the T4). The reset needs vLLM's dev mode; without it
+    the run says so instead of silently measuring a warm cache."""
+    monkeypatch.delenv("VLLM_API_KEY", raising=False)
+    port = _free_port()
+    servers = _server("s", port, "").replace("    stop_grace_s: 0.2\n",
+                                             f"    stop_grace_s: 0.2\n    env: {{ VLLM_SERVER_DEV_MODE: \"{dev_mode}\" }}\n")
+    runs = "  - { id: s, server: s, backend_overrides: { reset_prefix_cache: true }, matrix: { load.concurrency: [1, 2] } }\n"
+    result = asyncio.run(execute_sweep(_sweep(tmp_path, port, servers, runs), results_dir=tmp_path / "r"))
+    assert [s.params["prefix_cache_reset"] for s in result.summaries] == [expected, expected]

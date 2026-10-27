@@ -31,11 +31,12 @@ args, _ = ap.parse_known_args()      # accept (and ignore) the rest of vllm serv
 # auth for /v1 routes (/metrics stays open). Run 1 of the Kaggle notebook lost
 # an hour to this: the key was set for the client and the server inherited it.
 API_KEY = os.environ.get("VLLM_API_KEY")
+DEV_MODE = os.environ.get("VLLM_SERVER_DEV_MODE") == "1"    # vLLM exposes /reset_prefix_cache only then
 LOCK = threading.Lock()
 SLOTS = threading.Semaphore(args.max_num_seqs)
 STATE = {"running": 0, "waiting": 0, "prompt_tokens": 0, "generation_tokens": 0,
          "queue_sum": 0.0, "queue_count": 0, "ttft_sum": 0.0, "ttft_count": 0,
-         "prefix_hits": 0, "prefix_queries": 0}
+         "prefix_hits": 0, "prefix_queries": 0, "resets": 0}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -71,6 +72,7 @@ class Handler(BaseHTTPRequestHandler):
                 f'vllm:num_requests_waiting{{model_name="{args.model}"}} {s["waiting"]}',
                 f'vllm:kv_cache_usage_perc{{model_name="{args.model}"}} {usage}',
                 f'vllm:num_preemptions_total{{model_name="{args.model}"}} 0.0',
+                f'fake:prefix_cache_resets_total {s["resets"]}',
                 f'vllm:prefix_cache_hits_total{{model_name="{args.model}"}} {s["prefix_hits"]}',
                 f'vllm:prefix_cache_queries_total{{model_name="{args.model}"}} {s["prefix_queries"]}',
                 f'vllm:prompt_tokens_total{{model_name="{args.model}"}} {s["prompt_tokens"]}',
@@ -86,6 +88,14 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if not self._authorised():
+            return
+        if self.path == "/reset_prefix_cache":
+            if not DEV_MODE:
+                self._send(404, "{}")
+                return
+            with LOCK:
+                STATE["resets"] += 1
+            self._send(200, "")
             return
         body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
         prompt = " ".join(m.get("content", "") for m in body.get("messages", []))

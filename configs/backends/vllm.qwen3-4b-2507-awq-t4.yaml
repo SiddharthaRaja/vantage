@@ -11,6 +11,7 @@ api_key_env: VLLM_API_KEY
 timeout_s: 600
 max_retries: 0
 scrape_metrics: true      # poll vLLM's /metrics during each run (KV cache, queue, preemptions)
+reset_prefix_cache: true  # each load point starts with a cold prefix cache (server needs VLLM_SERVER_DEV_MODE=1)
 pricing:
   kind: self_hosted
   gpu_hourly_usd: ${GPU_HOURLY_USD:-0.35}

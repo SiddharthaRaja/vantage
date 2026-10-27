@@ -9,7 +9,7 @@ from vantage.backends.base import Backend
 from vantage.backends.registry import build_backend
 from vantage.cache.embedders import build_embedder
 from vantage.cache.semantic import CachedBackend, SemanticCache
-from vantage.logging import info
+from vantage.logging import info, warn
 from vantage.metrics.collector import summarize_run
 from vantage.metrics.cost import cost_for_summary
 from vantage.metrics.server import ServerScraper
@@ -80,7 +80,13 @@ async def run_spec(
     inner = getattr(backend, "inner", backend)
     metrics_url = getattr(inner, "metrics_url", None)
     trace = None
+    cache_reset: bool | None = None
     async with backend:
+        if getattr(inner, "reset_prefix_cache_enabled", False):
+            cache_reset = await inner.reset_prefix_cache()
+            if not cache_reset:
+                warn(f"{spec.id}: the server did not reset its prefix cache (start vLLM with "
+                     "VLLM_SERVER_DEV_MODE=1); this point may reuse prompts cached by the last one")
         if metrics_url:
             interval = float(getattr(inner, "metrics_interval_s", 1.0))
             async with ServerScraper(metrics_url, interval_s=interval) as scraper:
@@ -101,6 +107,7 @@ async def run_spec(
             "rate_qps": spec.load.rate_qps,
             "max_tokens": spec.max_tokens,
             "cache": spec.cache or None,
+            **({"prefix_cache_reset": cache_reset} if cache_reset is not None else {}),
             **spec.params,
         },
         slo=slo,

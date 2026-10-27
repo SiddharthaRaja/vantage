@@ -18,6 +18,11 @@
 # and AWQ int4 on T4 #1 at the high-load points, with metrics, to explain the
 # fp16-vs-AWQ difference (smaller weights leave more memory for KV cache).
 #
+# Every server runs with VLLM_SERVER_DEV_MODE=1 so Vantage can clear the prefix
+# cache before each load point (reset_prefix_cache in the backend configs): the
+# baseline showed a point re-sending the previous point's prompts and getting
+# 99% cache hits.
+#
 # VLLM_EXTRA carries any flag the baseline run needed to start on a T4
 # (e.g. --enforce-eager); the notebook sets it.
 name: kaggle-t4-tune
@@ -39,38 +44,38 @@ servers:
     command: >-
       vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
       --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8000 ${VLLM_EXTRA:-}
-    env: { CUDA_VISIBLE_DEVICES: "0" }
+    env: { CUDA_VISIBLE_DEVICES: "0", VLLM_SERVER_DEV_MODE: "1" }
     health_url: http://127.0.0.1:8000/v1/models
   noprefix:
     command: >-
       vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
       --gpu-memory-utilization 0.90 --no-enable-prefix-caching --port 8000 ${VLLM_EXTRA:-}
-    env: { CUDA_VISIBLE_DEVICES: "0" }
+    env: { CUDA_VISIBLE_DEVICES: "0", VLLM_SERVER_DEV_MODE: "1" }
     health_url: http://127.0.0.1:8000/v1/models
   mem95:
     command: >-
       vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
       --gpu-memory-utilization 0.95 --enable-prefix-caching --port 8000 ${VLLM_EXTRA:-}
-    env: { CUDA_VISIBLE_DEVICES: "0" }
+    env: { CUDA_VISIBLE_DEVICES: "0", VLLM_SERVER_DEV_MODE: "1" }
     health_url: http://127.0.0.1:8000/v1/models
   seqs32:
     command: >-
       vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
       --gpu-memory-utilization 0.90 --enable-prefix-caching --max-num-seqs 32 --port 8000 ${VLLM_EXTRA:-}
-    env: { CUDA_VISIBLE_DEVICES: "0" }
+    env: { CUDA_VISIBLE_DEVICES: "0", VLLM_SERVER_DEV_MODE: "1" }
     health_url: http://127.0.0.1:8000/v1/models
   chunk512:
     command: >-
       vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096
       --gpu-memory-utilization 0.90 --enable-prefix-caching --max-num-batched-tokens 512
       --port 8000 ${VLLM_EXTRA:-}
-    env: { CUDA_VISIBLE_DEVICES: "0" }
+    env: { CUDA_VISIBLE_DEVICES: "0", VLLM_SERVER_DEV_MODE: "1" }
     health_url: http://127.0.0.1:8000/v1/models
   awq:
     command: >-
       vllm serve cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit --dtype half --max-model-len 4096
       --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8001 ${VLLM_EXTRA:-}
-    env: { CUDA_VISIBLE_DEVICES: "1" }
+    env: { CUDA_VISIBLE_DEVICES: "1", VLLM_SERVER_DEV_MODE: "1" }
     health_url: http://127.0.0.1:8001/v1/models
 
 runs:
@@ -90,7 +95,12 @@ runs:
       load: { n_requests: 160 }, matrix: { load.concurrency: [8, 16, 32, 64] } }
   - { id: chunk512, group: chunk512, label: "prefill chunks 512", server: chunk512,
       load: { n_requests: 160 }, matrix: { load.concurrency: [8, 16, 32, 64] } }
-  # AWQ under the same metrics, to explain the precision comparison
+  # AWQ under the same metrics and a cold cache: the whole curve, because the
+  # baseline's low-concurrency AWQ points were flattered by a warm prefix cache
+  - { id: awq, group: awq, label: "AWQ int4", server: awq, backend: vllm.qwen3-4b-2507-awq-t4,
+      load: { n_requests: 48 }, matrix: { load.concurrency: [1, 2] } }
+  - { id: awq, group: awq, label: "AWQ int4", server: awq, backend: vllm.qwen3-4b-2507-awq-t4,
+      load: { n_requests: 96 }, matrix: { load.concurrency: [4] } }
   - { id: awq, group: awq, label: "AWQ int4", server: awq, backend: vllm.qwen3-4b-2507-awq-t4,
       load: { n_requests: 160 }, matrix: { load.concurrency: [8, 16, 32, 64] } }
 
