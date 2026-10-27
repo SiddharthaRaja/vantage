@@ -1,0 +1,27 @@
+{
+  "setup": {
+    "status": "ok",
+    "note": "e228ab0 Results: Kaggle 2x T4 baseline v3 (fp16 vs AWQ on vLLM, qualit",
+    "minutes": 0.2
+  },
+  "install_vllm": {
+    "status": "ok",
+    "note": "vllm 0.32.0 (isolated Python 3.12)",
+    "minutes": 1.4
+  },
+  "preflight": {
+    "status": "ok",
+    "note": "vllm 0.32.0 (cuda graphs on)",
+    "minutes": 3.9
+  },
+  "kaggle-t4-tune": {
+    "status": "ok",
+    "note": "done",
+    "minutes": 145.2
+  },
+  "crosscheck": {
+    "status": "ok",
+    "note": "written",
+    "minutes": 15.3
+  }
+}

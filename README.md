@@ -40,6 +40,10 @@ runs with no GPU at all.
   shipped with the analysis that chooses the threshold (below).
 - **Prefix caching**, **quantisation** (fp16 / int8 / int4) and
   **batching/concurrency** — configured, swept and compared.
+- **Server settings, one at a time** — a sweep can start and stop vLLM itself
+  with different flags, and every run records what the server reported on
+  `/metrics` (KV-cache use, queue, preemptions, prefix-cache hits), so a
+  latency knee comes with its cause.
 - **A fine-tuned small model** — `finetune/` distils a teacher, QLoRA-trains a
   4B student, and runs it through this same harness so it lands in the same
   table as everything else. See [finetune/README.md](finetune/README.md).
@@ -54,32 +58,79 @@ screen, not by picking 0.9 because it sounds safe:
 
 | threshold | hit rate | false-hit rate |
 |---|---|---|
-| 0.70 | 85.7% | 17.5% |
-| 0.80 | 76.3% | 10.5% |
-| **0.90** | **49.7%** | **0.7%** |
-| 0.96 | 30.7% | 0.0% |
+| 0.70 | 80.0% | 6.6% |
+| **0.80** | **76.1%** | **1.3%** |
+| 0.90 | 70.2% | 0.0% |
+| 0.96 | 63.6% | 0.0% |
 
-A false hit is a cache hit whose served answer scores below 0.75 F1 against the
-*new* question's reference. The sweep replays an ordered query log through a
-cold cache at each threshold; order matters, because a shuffled log overstates
-what a cold cache can do.
+Measured on Vectora's 365 real questions (all-MiniLM-L6-v2 embeddings), with a
+query log that revisits each question five times, 60% of the time paraphrased:
+the repeats are simulated, the questions are not. A false hit is a cache hit
+whose served answer scores below 0.75 F1 against the *new* question's
+reference. The sweep replays an ordered log through a cold cache at each
+threshold; order matters, because a shuffled log overstates what a cold cache
+can do. The recommended threshold (highest hit rate with at most 2% false
+hits) is 0.80, which would avoid 1,388 of 1,825 model calls.
 
-## Example findings from `vantage demo`
+## Results on real hardware: Qwen3-4B on vLLM, Kaggle 2x T4
 
-> These come from the **simulated** backend, so they demonstrate the analysis,
-> not a GPU. Every report generated from the simulator says so in its header.
+Qwen3-4B-Instruct-2507 served by vLLM 0.32.0, fp16 on one T4 and AWQ int4 on
+the other, driven by Vectora's real workload: 365 prompts exactly as Vectora
+sends them (about 1,030 prompt tokens and 145 answer tokens each). SLO: time to
+first token p95 ≤ 2 s and total p95 ≤ 15 s. Two runs, 27 October 2026; full
+numbers, server metrics and caveats in
+[results/kaggle-t4-tuning-v3_2026-10-27](results/kaggle-t4-tuning-v3_2026-10-27/RUN.md)
+and [results/kaggle-t4-baseline-v3_2026-10-27](results/kaggle-t4-baseline-v3_2026-10-27/RUN.md).
 
-- fp16 saturates at ~3,400 output tok/s; the computed knee is at concurrency 16.
-  Past it, throughput rises 25% while p95 latency rises 40%.
-- int4 is 1.7x the throughput of fp16 and 42% cheaper per request — **and fails
-  the quality gate** at −0.053 composite (95% CI −0.096 to −0.015). int8 gives
-  most of the speed and passes.
-- Prefix caching cut TTFT roughly in half at low concurrency and did **nothing**
-  for throughput, because at 450-token prompts and 96-token answers this
-  workload is decode-bound. A real finding, and one you only get by measuring
-  prefill and decode separately.
-- Break-even against a hosted API lands at **1.65 req/s sustained** (~142,000
-  requests/day) for a $0.75/hour GPU at this prompt and answer length.
+| | fp16 | AWQ int4 |
+|---|---|---|
+| time per token, one user | 43 ms | **19 ms** |
+| highest concurrency inside the SLO | 4 | 4 |
+| requests inside the SLO at 8 users | 47% | **76%** |
+| peak throughput | 103 tok/s | **119 tok/s** |
+| at 64 users: running / waiting / preempted | 45 / 17 / 19 | 64 / 4.5 / 0 |
+| answer quality (gate, 32 references) | baseline | no regression detectable: −0.012, 95% CI [−0.033, +0.010] |
+| $ per 1,000 answers inside the SLO ($0.35/h assumed) | $0.253 | **$0.172** |
+
+![Throughput vs concurrency, every configuration](docs/img/t4_throughput.png)
+
+What the measurements say:
+
+- **On a T4 this model is compute-bound, and the server metrics show it.**
+  fp16 breaks the SLO at 8 users with its KV cache under a quarter full and
+  nothing waiting inside vLLM; what grows is the cost of each decode step (43 →
+  301 ms per token from 1 to 32 users). Memory only becomes the limit at 64,
+  where the cache fills and requests are preempted.
+- **So no server setting rescues fp16.** One setting at a time: prefix caching
+  off is worse everywhere (−15% throughput, twice the first-token tail at 16
+  users); `--max-num-batched-tokens 512` is the best tweak (−21% first-token
+  p95 at 16 users, +4% throughput, close to run-to-run noise);
+  `--max-num-seqs 32` removes preemption at 64 users by queueing instead;
+  more GPU memory only helps past saturation. All hold the SLO to 4 users.
+- **Quantisation is the lever that works**, because a single decode step reads
+  every weight: AWQ reads a quarter of the bytes and leaves twice the KV cache
+  (60,272 vs 29,728 tokens), and the quality gate finds no regression it can
+  detect at n = 32.
+- **Self-hosting pays off only in a narrow band.** One T4 beats gpt-4o-mini's
+  list price above 0.40 req/s, and holds the SLO only up to about 0.57 req/s
+  (AWQ). Past that, the answer is a second GPU, not a cheaper one.
+- **Vantage measures what vLLM measures.** Against `vllm bench serve` on the
+  same server and tokens: first-token median within 3%, per-token latency
+  within 1%, throughput within 5% at concurrency 1, 8 and 32.
+
+![What the server saw](docs/img/t4_server_state.png)
+
+Read these as one model on one older GPU, measured once per configuration
+(repeat runs agree within 1–2% on throughput and about 15% on tail latency),
+with the load generator on the same machine as the servers, so first-token
+times contain no network. Three of Vantage's own measurement bugs were found
+on the way and fixed with regression tests: a request-count default that cut
+every open-loop point short, an API-key variable that the server read too,
+and a prefix cache left warm by the previous load point (spotted as a 99% hit
+rate in the server metrics).
+
+The simulated demo (`vantage demo`) still exists for running the whole
+pipeline with no GPU; its reports say so in their header.
 
 ---
 
@@ -131,7 +182,7 @@ src/vantage/
   report/       charts and the written report
 configs/        backend definitions and sweep experiments
 finetune/       distillation, QLoRA training, merge/export, comparison
-tests/          59 tests, all runnable without a GPU
+tests/          88 tests, all runnable without a GPU (a fake vLLM server included)
 ```
 
 Every run directory is self-contained: `manifest.json` (resolved config, git

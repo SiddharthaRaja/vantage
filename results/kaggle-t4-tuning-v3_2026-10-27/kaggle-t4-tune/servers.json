@@ -1,0 +1,53 @@
+{
+  "started": {
+    "base": {
+      "command": "vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "VLLM_SERVER_DEV_MODE": "1"
+      },
+      "startup_s": 76.5
+    },
+    "noprefix": {
+      "command": "vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --no-enable-prefix-caching --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "VLLM_SERVER_DEV_MODE": "1"
+      },
+      "startup_s": 102.2
+    },
+    "mem95": {
+      "command": "vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096 --gpu-memory-utilization 0.95 --enable-prefix-caching --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "VLLM_SERVER_DEV_MODE": "1"
+      },
+      "startup_s": 74.2
+    },
+    "seqs32": {
+      "command": "vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --enable-prefix-caching --max-num-seqs 32 --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "VLLM_SERVER_DEV_MODE": "1"
+      },
+      "startup_s": 124.2
+    },
+    "chunk512": {
+      "command": "vllm serve Qwen/Qwen3-4B-Instruct-2507 --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --enable-prefix-caching --max-num-batched-tokens 512 --port 8000",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "VLLM_SERVER_DEV_MODE": "1"
+      },
+      "startup_s": 146.3
+    },
+    "awq": {
+      "command": "vllm serve cyankiwi/Qwen3-4B-Instruct-2507-AWQ-4bit --dtype half --max-model-len 4096 --gpu-memory-utilization 0.90 --enable-prefix-caching --port 8001",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1",
+        "VLLM_SERVER_DEV_MODE": "1"
+      },
+      "startup_s": 176.3
+    }
+  },
+  "failed": {}
+}

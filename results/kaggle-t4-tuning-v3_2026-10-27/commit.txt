@@ -1,0 +1,5 @@
+
+$ git log --oneline -3
+e228ab0 Results: Kaggle 2x T4 baseline v3 (fp16 vs AWQ on vLLM, quality gate, offered load, cache)
+2082a85 Cold prefix cache before every load point; cross-check in the tuning run
+2cb7094 Kaggle baseline v3: never hand the client's API key to vLLM
