@@ -1,0 +1,9 @@
+{
+  "qps": 0.39971029726311175,
+  "requests_per_day": 34534.96968353286,
+  "api_usd_per_request": 0.00024323171779141106,
+  "self_host_usd_per_hour": 0.35,
+  "explanation": "API costs $0.00024/request at 1033 in / 147 out tokens. A $0.35/hour GPU costs $0.00010/second regardless of load, so it pays for itself above 0.40 req/s sustained (~34,535 requests/day) -- provided the GPU can actually serve that rate within SLO.",
+  "avg_prompt_tokens": 1033.1742331288344,
+  "avg_completion_tokens": 147.0926380368098
+}

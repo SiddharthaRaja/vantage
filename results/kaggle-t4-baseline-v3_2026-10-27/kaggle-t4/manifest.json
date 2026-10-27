@@ -1,0 +1,157 @@
+{
+  "name": "kaggle-t4",
+  "config_path": "/kaggle/working/vantage_repo/configs/sweeps/kaggle-t4.yaml",
+  "config": {
+    "name": "kaggle-t4",
+    "description": "Qwen3-4B-Instruct-2507 fp16 vs AWQ int4 on vLLM, one Kaggle T4 each, Vectora workload (qasper-300), quality-gated on 32 references.",
+    "workload": "data/workload.vectora.jsonl",
+    "cooldown_s": 5,
+    "slo": {
+      "ttft_p95_s": 2.0,
+      "total_p95_s": 15.0
+    },
+    "defaults": {
+      "max_tokens": 192,
+      "load": {
+        "mode": "closed",
+        "warmup_requests": 8,
+        "seed": 7
+      }
+    },
+    "runs": [
+      {
+        "id": "fp16",
+        "group": "fp16",
+        "label": "Qwen3-4B fp16 (T4)",
+        "backend": "vllm.qwen3-4b-2507-t4",
+        "load": {
+          "n_requests": 48
+        },
+        "matrix": {
+          "load.concurrency": [
+            1,
+            2
+          ]
+        }
+      },
+      {
+        "id": "fp16",
+        "group": "fp16",
+        "label": "Qwen3-4B fp16 (T4)",
+        "backend": "vllm.qwen3-4b-2507-t4",
+        "load": {
+          "n_requests": 96
+        },
+        "matrix": {
+          "load.concurrency": [
+            4,
+            8
+          ]
+        }
+      },
+      {
+        "id": "fp16",
+        "group": "fp16",
+        "label": "Qwen3-4B fp16 (T4)",
+        "backend": "vllm.qwen3-4b-2507-t4",
+        "load": {
+          "n_requests": 160
+        },
+        "matrix": {
+          "load.concurrency": [
+            16,
+            32,
+            64
+          ]
+        }
+      },
+      {
+        "id": "awq",
+        "group": "awq",
+        "label": "Qwen3-4B AWQ int4 (T4)",
+        "backend": "vllm.qwen3-4b-2507-awq-t4",
+        "load": {
+          "n_requests": 48
+        },
+        "matrix": {
+          "load.concurrency": [
+            1,
+            2
+          ]
+        }
+      },
+      {
+        "id": "awq",
+        "group": "awq",
+        "label": "Qwen3-4B AWQ int4 (T4)",
+        "backend": "vllm.qwen3-4b-2507-awq-t4",
+        "load": {
+          "n_requests": 96
+        },
+        "matrix": {
+          "load.concurrency": [
+            4,
+            8
+          ]
+        }
+      },
+      {
+        "id": "awq",
+        "group": "awq",
+        "label": "Qwen3-4B AWQ int4 (T4)",
+        "backend": "vllm.qwen3-4b-2507-awq-t4",
+        "load": {
+          "n_requests": 160
+        },
+        "matrix": {
+          "load.concurrency": [
+            16,
+            32,
+            64
+          ]
+        }
+      }
+    ],
+    "quality": {
+      "enabled": true,
+      "baseline": "fp16",
+      "max_drop": 0.02,
+      "eval_file": "data/eval.references.jsonl",
+      "concurrency": 4,
+      "max_tokens": 256
+    },
+    "cost": {
+      "api_reference": "openai.gpt-4o-mini",
+      "self_hosted_reference": "vllm.qwen3-4b-2507-t4"
+    }
+  },
+  "environment": {
+    "timestamp_utc": "2026-10-27T09:08:04+00:00",
+    "python": "3.13.15",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "git_sha": "2cb7094",
+    "git_dirty": false,
+    "gpus": [
+      "Tesla T4, 15360 MiB, 580.178.04",
+      "Tesla T4, 15360 MiB, 580.178.04"
+    ]
+  },
+  "workload": {
+    "path": "data/workload.vectora.jsonl",
+    "n_items": 365,
+    "prompt_words_p50": 491,
+    "prompt_words_min": 221,
+    "prompt_words_max": 939,
+    "approx_prompt_tokens_p50": 663,
+    "n_with_reference": 365,
+    "reference_words_mean": 13.9
+  },
+  "slo": {
+    "ttft_p95_s": 2.0,
+    "total_p95_s": 15.0,
+    "max_error_rate": 0.01
+  },
+  "n_configs": 14,
+  "note": "Qwen3-4B-Instruct-2507 fp16 vs AWQ int4 on vLLM, one Kaggle T4 each, Vectora workload (qasper-300), quality-gated on 32 references."
+}

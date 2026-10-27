@@ -1,0 +1,42 @@
+{
+  "setup": {
+    "status": "ok",
+    "note": "2cb7094 Kaggle baseline v3: never hand the client's API key to vLLM",
+    "minutes": 0.1
+  },
+  "install_vllm": {
+    "status": "ok",
+    "note": "vllm 0.32.0 (isolated Python 3.12)",
+    "minutes": 1.1
+  },
+  "servers": {
+    "status": "ok",
+    "note": "vllm 0.32.0 (cuda graphs on)",
+    "minutes": 3.8
+  },
+  "sanity": {
+    "status": "ok",
+    "note": "prompt tokens [1174, 1174]",
+    "minutes": 0.2
+  },
+  "kaggle-t4": {
+    "status": "ok",
+    "note": "gate pass: delta -0.012, 95% CI [-0.0327, 0.0096]",
+    "minutes": 55.6
+  },
+  "kaggle-t4-offered-load": {
+    "status": "ok",
+    "note": "done",
+    "minutes": 49.0
+  },
+  "crosscheck": {
+    "status": "failed",
+    "error": "RuntimeError: vllm bench serve failed with every flag set (see vllm_bench.log)",
+    "minutes": 1.2
+  },
+  "cache_sim": {
+    "status": "ok",
+    "note": 0.8,
+    "minutes": 2.6
+  }
+}

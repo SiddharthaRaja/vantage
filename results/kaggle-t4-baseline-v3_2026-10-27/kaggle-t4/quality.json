@@ -1,0 +1,546 @@
+{
+  "fp16": {
+    "config_id": "fp16",
+    "n": 32,
+    "exact_match": 0.0,
+    "token_f1": 0.26672568731265517,
+    "citation_grounding": 1.0,
+    "number_agreement": 0.4522236444111444,
+    "composite": 0.48308247039348096,
+    "composite_ci95": [
+      0.44870973086984833,
+      0.5172401646755876
+    ],
+    "judge_score": null,
+    "per_item": [
+      {
+        "item_id": "q-11c77ee117",
+        "composite": 0.5188,
+        "token_f1": 0.375,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.4,
+        "prediction": "The sources do not specify by how much the model outperforms the baseline in the cross-domain evaluation. While [3] states that a cross-domain adapted BERT language model performs significantly better than baseline models like vanilla BERT-base and XLNet-base, it does not provide a quantitative measure of the performance improvement [3]. The other sources discuss methodology, training setups, and "
+      },
+      {
+        "item_id": "q-20df24165b",
+        "composite": 0.7106,
+        "token_f1": 0.4681,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The baseline machine learning prediction approach is a linear logistic regression model applied to a set of stock technical signals to predict the sign of the next day's stock return (+ or -) [6]. This model serves as a comparison to evaluate the improvement in prediction accuracy when incorporating sentiment features [6]. It is distinct from the full machine learning strategy that uses sentiment "
+      },
+      {
+        "item_id": "q-981443fce6",
+        "composite": 0.5444,
+        "token_f1": 0.3765,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5,
+        "prediction": "The sources do not specify which countries or languages the political speeches and manifestos come from. While they mention data from parliamentary speeches and party manifestos [1], and reference the WZB API and the Manifestoproject [2], there is no information provided about the geographic origin of the countries or the languages used in the texts. Therefore, the countries and languages are not "
+      },
+      {
+        "item_id": "q-cc354c952b",
+        "composite": 0.6939,
+        "token_f1": 0.4309,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The sentiment intensity predictions are higher for European American names (race) across all emotion intensity prediction tasks, and for sentences involving one gender/race compared to the other, with race-related biases being more prevalent than gender-related biases [6][4]. Specifically, systems consistently assign higher sentiment intensity to sentences with European American names, while for v"
+      },
+      {
+        "item_id": "q-594a6bf37e",
+        "composite": 0.4535,
+        "token_f1": 0.2936,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.2857,
+        "prediction": "The language tasks experimented on include next sentence prediction [2], aspect-target sentiment classification using SemEval 2014 Task 4 Subtask datasets for laptops and restaurants domains [5], and sentiment classification in multiple languages including Dutch, English, Spanish, Turkish, and Russian [6]. Sentiment classification involved distinguishing between positive, negative, and neutral pol"
+      },
+      {
+        "item_id": "q-ecfb2e75eb",
+        "composite": 0.409,
+        "token_f1": 0.1682,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.3333,
+        "prediction": "The sources explore the usefulness of opinion summary and aspect detection history in aspect term extraction. Opinion summary is distilled from the input sentence and conditioned on each current token, aiding aspect prediction [1]. It is built upon initial opinion features from an auxiliary opinion detection task, which already help distinguish opinion words to some extent [2]. The model improves "
+      },
+      {
+        "item_id": "q-c7486d0393",
+        "composite": 0.313,
+        "token_f1": 0.0843,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.1,
+        "prediction": "The source does not indicate which non-English language had the worst results in terms of overall performance or error rate. While it provides the ratio of misclassifications containing non-English words for several languages\u201425.84% for Dutch, 21.76% for Turkish, 24.46% for Spanish, and 10.71% for Russian [2]\u2014this metric reflects only the presence of non-English words in misclassified instances, n"
+      },
+      {
+        "item_id": "q-33d1f53cf2",
+        "composite": 0.4077,
+        "token_f1": 0.2394,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.2,
+        "prediction": "Yes, the sources indicate a focus on specific product and service domains. For instance, Yelp is cited as a service domain example [1], and the methodology in one study involves training and evaluation on domains such as Laptops and Restaurants [2]. Additionally, the study mentions hotels as a potential domain similar to restaurants, suggesting an interest in service domains like hospitality [5]. "
+      },
+      {
+        "item_id": "q-fe90eec1e3",
+        "composite": 0.4056,
+        "token_f1": 0.2603,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.1538,
+        "prediction": "The sources of the data include:  \n- Political text data from discussions and speeches in the German Bundestag [1];  \n- Manifesto texts of political parties running for election during the 18th and 17th legislative periods of the German parliament [1];  \n- Original article URLs, publication dates, article headings, article content, a binary label indicating whether the article is fake, and a binar"
+      },
+      {
+        "item_id": "q-64af7f5c10",
+        "composite": 0.3598,
+        "token_f1": 0.1515,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.1667,
+        "prediction": "For the purposes of this study, \"propaganda\" is defined as intentional and potentially multicast communication designed to influence perception, with detection focused on linguistic techniques at the sentence and phrase (fragment) levels rather than at the article or outlet level [1][5]. The study acknowledges that classification depends not only on content but also on the use by both sender and r"
+      },
+      {
+        "item_id": "q-0f12dc077f",
+        "composite": 0.465,
+        "token_f1": 0.2,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5,
+        "prediction": "The criteria used to select the 8,640 English sentences are not explicitly detailed in the provided sources. While Source [1] states that the sentences were \"carefully chosen to tease out biases towards certain races and genders,\" it does not specify the exact selection criteria such as linguistic features, demographic representation, or content types [1]. No other source provides further details "
+      },
+      {
+        "item_id": "q-abc5836c54",
+        "composite": 0.416,
+        "token_f1": 0.2301,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.25,
+        "prediction": "No, the sources do not indicate that the approach is tested on a dataset without incomplete data. The paper focuses on training and testing on incomplete data [1][6], and acknowledges that current models are not designed for clean, complete data [2]. While one source mentions testing generalizability by performing training on one dataset and testing on another [3], it does not specify whether the "
+      },
+      {
+        "item_id": "q-3d39e57e90",
+        "composite": 0.3665,
+        "token_f1": 0.259,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.0,
+        "prediction": "The authors mention that there is a significant correlation between Twitter sentiment and abnormal returns during the peaks of Twitter volume during major events [6]. However, they do not provide specific examples of major events (such as presidential debates, Oscars, or financial crises) that drew public attention or their direct impact on stock prices. While Source [3] references monitoring popu"
+      },
+      {
+        "item_id": "q-9b7655d39c",
+        "composite": 0.4484,
+        "token_f1": 0.2029,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.4286,
+        "prediction": "The NLP toolkits used in the sources include Stanford CoreNLP [1][6], NLTK [1], TwitterNLP [1], and Rasa (with spacy and tensorflow backends) [2]. Additionally, hand-crafted features are used in feature engineering [5], and specific tasks like sentiment analysis are evaluated using datasets such as SST, IMDb, and Amazon Reviews [4]. No other toolkits are explicitly mentioned in the provided source"
+      },
+      {
+        "item_id": "q-1ed6acb889",
+        "composite": 0.6035,
+        "token_f1": 0.2301,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "A private dashboard, in the context of the VAIS Hate Speech Detection System, refers to a evaluation metric or interface used to assess the performance of a hate speech detection model on a restricted or non-public dataset, as opposed to a public dashboard which uses publicly available data [1]. The system's performance on the private dashboard was measured by its F1 macro-score, which achieved 0."
+      },
+      {
+        "item_id": "q-1405824a68",
+        "composite": 0.5846,
+        "token_f1": 0.3269,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.75,
+        "prediction": "The provided sources do not specify whether the introduced LSTM+CNN model was trained on annotated data in a supervised fashion. While several sources mention the use of LSTM and CNN architectures [1][2][3], and discuss training with max input sequence lengths [3], there is no explicit mention of the use of annotated data or the supervised training methodology. Therefore, the training paradigm (su"
+      },
+      {
+        "item_id": "q-363ddc06db",
+        "composite": 0.4109,
+        "token_f1": 0.234,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.2222,
+        "prediction": "The types of features used included word embeddings (300-dimensional vectors) [1], local features extracted from a window of surrounding words around each term [3], grammatical features [2], sentiment and emotion lexicon-derived features [4], part-of-speech based features [6], and sentence embeddings from deep neural networks [4]. Hand-crafted features such as TF-IDF were noted but used with cauti"
+      },
+      {
+        "item_id": "q-37016cc987",
+        "composite": 0.473,
+        "token_f1": 0.2734,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.4,
+        "prediction": "In WDIRL, different domains are weighted by adjusting the class distribution in the source domain using a class weight $\\mathbf{w}$, which is applied to align $\\rm{P}(\\rm{Y})$ between the source and target domains [6]. Specifically, the source domain examples are reweighted by class to make the label distribution $\\rm{P}(\\rm{Y})$ of the weighted source domain closer to that of the target domain, t"
+      },
+      {
+        "item_id": "q-b3dc6d95d1",
+        "composite": 0.4998,
+        "token_f1": 0.2774,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5,
+        "prediction": "DIRL is evaluated through experimental comparison of its performance with other methods, specifically by comparing the performance of DIRL, CMD, and DANN against SO (a baseline method) in cross-domain sentiment analysis tasks [2]. The evaluation focuses on the effectiveness of the DIRL framework in handling domain shifts in the label distribution $\\rm {P}(\\rm {Y})$ [6]. The proposed WDIRL framewor"
+      },
+      {
+        "item_id": "q-1beb4a590f",
+        "composite": 0.37,
+        "token_f1": 0.1972,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.125,
+        "prediction": "The network's baseline features consist of the features extracted from a pre-trained model, which are appended to the hidden layer of the baseline CNN architecture prior to the final output softmax layer [1]. These features are referred to as \"baseline features\" and are derived from the baseline CNN method, which uses a fully-connected layer to produce features for classification of sarcastic vers"
+      },
+      {
+        "item_id": "q-e431661f17",
+        "composite": 0.6579,
+        "token_f1": 0.3509,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The improvement was $2.2\\%$ on the restaurants dataset compared to the previous state-of-the-art method BERT-PT, as achieved through language model fine-tuning [6]. No other specific improvement values are provided in the sources for other tasks or methods."
+      },
+      {
+        "item_id": "q-6d0f2cce46",
+        "composite": 0.4329,
+        "token_f1": 0.2675,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.25,
+        "prediction": "No, changes in policies of political actors do not account for all of the mistakes the model made. While the model's misclassifications are associated with changes in party policies [1][5][6], the sources also indicate that previous work has focused on oversimplified classifications (e.g., left vs. right) and fails to capture subtle differences in political policies [3]. This suggests that limitat"
+      },
+      {
+        "item_id": "q-e574f0f733",
+        "composite": 0.657,
+        "token_f1": 0.3488,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The expectation regularization loss is defined as the loss function that trains a model to fit the conditional probabilities of labels given features [1]. It is a lightly supervised learning method where the model learns to match the expected label distributions, and label regularization is a special case of expectation regularization in which the model fits the true label proportions of an unlabe"
+      },
+      {
+        "item_id": "q-282aa4e160",
+        "composite": 0.4792,
+        "token_f1": 0.3506,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.2857,
+        "prediction": "The opinion summary is determined through a selective transformation network that first calculates a new opinion representation conditioned on the current aspect candidate [5]. This transformed representation is then used in a bi-linear attention network to compute the opinion summary as a weighted sum of the new representations, with weights derived from the association scores between the current"
+      },
+      {
+        "item_id": "q-c09a92e25e",
+        "composite": 0.489,
+        "token_f1": 0.2748,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.4615,
+        "prediction": "| Dimension | Source [1] | Source [3] | Source [6] |\n|----------|------------|------------|------------|\n| Lexicon creation method | Manual annotation or use of established lexicons (e.g., WordNet, SentiWordNet) [1] | Merged and cleansed online resources (e.g., typos, slang, foreign words, English-Bulgarian equivalents) [3] | Created via expert rules (linguists, behavioural scientists) [4]; limite"
+      },
+      {
+        "item_id": "q-b03e8e9a0c",
+        "composite": 0.4898,
+        "token_f1": 0.2299,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5455,
+        "prediction": "The baselines used in the studies include a lexicon-based baseline and a majority baseline [2][6]. In one study, the majority baseline is compared against an RNN method, and the null hypothesis is rejected, indicating significance [6]. In another context, the baseline systems were retrained on the union of the train and development sets, implying a data-level baseline setup [4]. In the narrative g"
+      },
+      {
+        "item_id": "q-4b8257cdd9",
+        "composite": 0.4262,
+        "token_f1": 0.2065,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.3333,
+        "prediction": "The authors define 'incorrect words' as words that are present in text but are erroneous\u2014either misspelled, misused, or inaccurately translated\u2014leading to incomplete or noisy data [2][3]. In the context of text classification, such incorrect words are considered part of \"incomplete data\" and can hinder model performance, especially when models are not designed to handle such noise [2][3]. The mode"
+      },
+      {
+        "item_id": "q-f608fbc7a4",
+        "composite": 0.4285,
+        "token_f1": 0.2115,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.3333,
+        "prediction": "The model used to capture the implicit structure is EI, which learns rich implicit structures using LSTM and self-attention mechanisms [2]. In contrast, the variants EI (i:MLP) and EI (i:Identity) use multi-layer perceptron (MLP) or replace self-attention with MLP to capture implicit structures, but these models are less effective and do not focus as much on capturing both explicit and implicit st"
+      },
+      {
+        "item_id": "q-637aa32a34",
+        "composite": 0.5238,
+        "token_f1": 0.2909,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5714,
+        "prediction": "No, they do not report results only on English datasets. While several sources mention English datasets, they also include results for other languages. For instance, Source [1] reports results for English, Dutch, and Russian in the SemEval 2016 Restaurant dataset [1]. Source [2] mentions experiments on English and Spanish tweets [2]. Source [6] explicitly states that the model achieves improvement"
+      },
+      {
+        "item_id": "q-e292676c8c",
+        "composite": 0.4705,
+        "token_f1": 0.2121,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5,
+        "prediction": "The soft-selection approaches evaluated in the sources are attention-based methods that assign attention weights across the entire sentence, considering every word with different weights [4]. Specifically, BERT-Soft is identified as a soft-selection approach, as it is analogous to BERT-Original and uses attention mechanisms where weights are distributed across all words [2]. The evaluation include"
+      },
+      {
+        "item_id": "q-e79a5b6b66",
+        "composite": 0.3582,
+        "token_f1": 0.1014,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.25,
+        "prediction": "The provided sources do not contain sufficient information to determine which non-English language had the best performance in terms of sentiment analysis. While Source [4] reports that the EI method achieves the best performance for English, Dutch, and Russian, it does not explicitly state which language had the best performance among non-English languages. Additionally, Source [3] provides relat"
+      },
+      {
+        "item_id": "q-3554ac92d4",
+        "composite": 0.5914,
+        "token_f1": 0.4113,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.625,
+        "prediction": "The auxiliary sentence is generated by converting a target-aspect pair into a natural language question that reflects the relationship between them. For example, for the pair (LOCATION1, safety), the generated sentence is \"what do you think of the safety of location - 1?\" [2]. This process transforms the aspect-based sentiment analysis (ABSA) task from a single sentence classification task into a "
+      }
+    ]
+  },
+  "awq": {
+    "config_id": "awq",
+    "n": 32,
+    "exact_match": 0.0,
+    "token_f1": 0.2617408807542474,
+    "citation_grounding": 1.0,
+    "number_agreement": 0.4149576118326118,
+    "composite": 0.4715227992975643,
+    "composite_ci95": [
+      0.4361384512291334,
+      0.5083345078859077
+    ],
+    "judge_score": null,
+    "per_item": [
+      {
+        "item_id": "q-11c77ee117",
+        "composite": 0.4551,
+        "token_f1": 0.2707,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.3333,
+        "prediction": "The provided sources do not specify by how much the model outperforms the baseline in the cross-domain evaluation. While Source [3] states that a cross-domain adapted BERT language model performs significantly better than baseline models like vanilla BERT-base and XLNet-base, it does not provide a quantitative measure of the performance improvement [3]. Similarly, Source [4] reports an accuracy of"
+      },
+      {
+        "item_id": "q-20df24165b",
+        "composite": 0.7875,
+        "token_f1": 0.6389,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "The baseline machine learning prediction approach is a linear logistic regression model applied to a set of stock technical signals to predict the sign of the next day's stock return (+/-) [6]. This model serves as a baseline to evaluate whether sentiment features improve prediction accuracy compared to using only technical indicators [1][6]."
+      },
+      {
+        "item_id": "q-981443fce6",
+        "composite": 0.5061,
+        "token_f1": 0.3469,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.4,
+        "prediction": "The provided sources do not specify which countries or languages the political speeches and manifestos come from. While the sources mention data from parliamentary speeches and party manifestos, including references to the 17th and 18th legislative periods and the 17th Bundestag [1][5], no information is given about the geographic origin of the speeches or manifestos or the languages used. Therefo"
+      },
+      {
+        "item_id": "q-cc354c952b",
+        "composite": 0.6378,
+        "token_f1": 0.3757,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.875,
+        "prediction": "The sentiment intensity predictions are higher for European American names in terms of emotion intensity across all four emotion intensity prediction tasks [6], and for African American names specifically in valence prediction [6]. The study found that biases are more prevalent for race than for gender [4], and over 75% of systems show a tendency to assign higher intensity scores to one race or ge"
+      },
+      {
+        "item_id": "q-594a6bf37e",
+        "composite": 0.4161,
+        "token_f1": 0.2766,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.1667,
+        "prediction": "The language tasks experimented on include next sentence prediction [2] and aspect-target sentiment classification using domain-specific datasets such as SemEval 2014 Task 4 Subtask datasets for laptops and restaurants [5]. Sentiment classification tasks involved evaluating sentiment polarity (positive, negative, neutral) in product reviews [3]. Additionally, multilingual sentiment analysis was co"
+      },
+      {
+        "item_id": "q-ecfb2e75eb",
+        "composite": 0.4126,
+        "token_f1": 0.1233,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.4286,
+        "prediction": "The sources indicate that the detection history and opinion summary are explored as useful components in aspect term extraction [3]. Specifically, the opinion summary is distilled from the input sentence and conditioned on each current token for aspect prediction, helping improve aspect prediction on that token [1]. The opinion summary is built upon initial opinion features from an auxiliary opini"
+      },
+      {
+        "item_id": "q-c7486d0393",
+        "composite": 0.3009,
+        "token_f1": 0.0625,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.0909,
+        "prediction": "The source does not indicate that any non-English language had the \"worst results\" in terms of performance or accuracy. Instead, it provides data on the proportion of misclassifications that involved non-English words, which is used to investigate machine translation errors [2]. \n\nSpecifically, the percentage of misclassifications involving non-English words is as follows:  \n- Dutch: 25.84% [2]  \n"
+      },
+      {
+        "item_id": "q-33d1f53cf2",
+        "composite": 0.4349,
+        "token_f1": 0.272,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.25,
+        "prediction": "Yes, the sources indicate a focus on specific product and service domains.  \n\n- Yelp is cited as a service domain example [1].  \n- The methodology involves training and evaluation across domains such as laptops and restaurants, indicating a focus on product and service domains [2].  \n- The conclusion suggests investigating hotels as a domain similar to restaurants, implying continued focus on serv"
+      },
+      {
+        "item_id": "q-fe90eec1e3",
+        "composite": 0.3723,
+        "token_f1": 0.2099,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.1111,
+        "prediction": "The sources of the data are as follows:\n\n- From source [1]: Political text data obtained from (a) discussions and speeches in the German Bundestag and (b) manifesto texts of political parties running for election during the 18th and 17th legislative periods of the German parliament [1].  \n- From source [3]: Dataset entries include the URL of the original article, date of publication, article headi"
+      },
+      {
+        "item_id": "q-64af7f5c10",
+        "composite": 0.3563,
+        "token_f1": 0.1857,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.0909,
+        "prediction": "For the purposes of this study, \"propaganda\" is defined as intentional and potentially multicast communication associated with the propagation of a particular ideology or message, rooted in the Latin term *propagare* meaning \"to propagate\" [1]. The study focuses on detecting propaganda at the sentence and phrase (fragment) level, rather than at the article or outlet level, aiming to identify lingu"
+      },
+      {
+        "item_id": "q-0f12dc077f",
+        "composite": 0.4177,
+        "token_f1": 0.1875,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.3333,
+        "prediction": "The criteria used to select the 8,640 English sentences are not explicitly detailed in the provided sources. While Source [1] states that the sentences were \"carefully chosen to tease out biases towards certain races and genders,\" no further specific criteria\u2014such as linguistic features, demographic representation, sentence structure, or content themes\u2014are provided to explain how the selection was"
+      },
+      {
+        "item_id": "q-abc5836c54",
+        "composite": 0.3947,
+        "token_f1": 0.2105,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.2,
+        "prediction": "No, the sources do not indicate that the approach is tested on a dataset without incomplete data. Instead, the work focuses on handling incomplete data, with the training and evaluation using incomplete datasets [1][6]. The paper acknowledges that current approaches are designed for clean, complete data and aims to improve performance on incomplete data [2]. There is no mention of testing on a dat"
+      },
+      {
+        "item_id": "q-3d39e57e90",
+        "composite": 0.4244,
+        "token_f1": 0.2486,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.25,
+        "prediction": "The authors mention that there is a significant correlation between Twitter sentiment and abnormal returns during the peaks of Twitter volume during major events [6]. They also note that sentiment monitoring can be applied to track popular events such as Presidential debates or the Oscars, which draw public attention [3]. However, the sources do not provide specific examples of major events (e.g.,"
+      },
+      {
+        "item_id": "q-9b7655d39c",
+        "composite": 0.4329,
+        "token_f1": 0.1842,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.4,
+        "prediction": "The NLP toolkits mentioned in the sources include NLTK, Stanford CoreNLP, and TwitterNLP [1]. Additionally, Stanford CoreNLP is specifically cited as being used for sentiment scoring in preprocessing tasks [6]. In the context of NLU service platforms, the open-source framework Rasa is referenced, which uses a spacy and tensorflow backend [2]. \n\nThus, the toolkits and systems used are: NLTK, Stanfo"
+      },
+      {
+        "item_id": "q-1ed6acb889",
+        "composite": 0.6266,
+        "token_f1": 0.2812,
+        "citation_grounding": 1.0,
+        "number_agreement": 1.0,
+        "prediction": "Private dashboard refers to a evaluation metric or interface used in a hate speech detection system where the performance of a model is assessed on a dataset that is not publicly available, typically involving data that is not shared with external evaluators [1]. In the context of the VAIS hate speech detection system, the model achieved an F1 macro-score of 0.584 on the private dashboard, indicat"
+      },
+      {
+        "item_id": "q-1405824a68",
+        "composite": 0.5104,
+        "token_f1": 0.3009,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5,
+        "prediction": "The provided sources do not specify whether the introduced LSTM+CNN model was trained on annotated data in a supervised fashion. While several sources mention the use of LSTM and CNN architectures [1][2][3], and note that deep learning models require large datasets [5], there is no explicit statement about the training methodology being supervised, unsupervised, or semi-supervised. No source detai"
+      },
+      {
+        "item_id": "q-363ddc06db",
+        "composite": 0.3654,
+        "token_f1": 0.1869,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.125,
+        "prediction": "The types of features used include:  \n- Word embeddings, where each word is encoded as a 300-dimensional vector [1];  \n- Grammatical features, which are hand-crafted features used in the analysis [2];  \n- Local features extracted from a window of surrounding words around a target word, capturing context [3];  \n- Features derived from sentiment and emotion lexicons [4];  \n- Part-of-speech based fea"
+      },
+      {
+        "item_id": "q-37016cc987",
+        "composite": 0.6112,
+        "token_f1": 0.386,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.75,
+        "prediction": "The different domains are weighted in WDIRL by applying class weights $\\mathbf{w}$ to the source domain examples such that the label distribution $\\rm{P}(\\rm{Y})$ of the weighted source domain is aligned with that of the target domain [6]. This alignment is achieved by adjusting the data distribution in the source domain before applying domain-invariant representation learning, thereby alleviating"
+      },
+      {
+        "item_id": "q-b3dc6d95d1",
+        "composite": 0.5829,
+        "token_f1": 0.2953,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.8,
+        "prediction": "The evaluation of DIRL is based on empirical experimentation that compares its performance with other methods such as CMD and DANN against SO in cross-domain sentiment analysis tasks [2][4]. The effectiveness of the DIRL framework is assessed by its performance under conditions where the label distribution $\\rm{P}(\\rm{Y})$ does not shift across domains [2]. Additionally, the proposed WDIRL framewo"
+      },
+      {
+        "item_id": "q-1beb4a590f",
+        "composite": 0.3689,
+        "token_f1": 0.2642,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.0,
+        "prediction": "The network's baseline features include word embeddings, where each word is encoded as a 300-dimensional vector [3], and features extracted from a pre-trained model that are appended to the hidden layer of the baseline CNN before the final output layer [1]. These baseline features are derived from the baseline CNN architecture, which classifies sentences as sarcastic or non-sarcastic [6]. The base"
+      },
+      {
+        "item_id": "q-e431661f17",
+        "composite": 0.492,
+        "token_f1": 0.26,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5,
+        "prediction": "The improvement reported in the sources is an absolute improvement of 2.2% on the restaurants dataset compared to the previous state-of-the-art method BERT-PT, achieved through domain adaptation via BERT language model fine-tuning [6]. \n\nNo other source provides a quantitative measure of improvement in accuracy or performance. While some sources mention variability in accuracy (e.g., standard devi"
+      },
+      {
+        "item_id": "q-6d0f2cce46",
+        "composite": 0.4613,
+        "token_f1": 0.2613,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.375,
+        "prediction": "The sources indicate that changes in party policies are associated with model misclassifications [1][5][6]. For instance, the green party's shift in promoting renewable energy and opposing nuclear energy in prior manifestos is cited as an example where policy changes correlate with model errors [1]. Additionally, the model's use of text features linked to political orientation and sentiment correl"
+      },
+      {
+        "item_id": "q-e574f0f733",
+        "composite": 0.5217,
+        "token_f1": 0.2333,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.6667,
+        "prediction": "The expectation regularization loss is defined as the training objective where the model is trained to fit the conditional probabilities of labels given features [1]. In the context of label regularization, this involves fitting the true label proportions of an unlabeled dataset, which is a special case of expectation regularization [6]. However, the specific mathematical formulation of the expect"
+      },
+      {
+        "item_id": "q-282aa4e160",
+        "composite": 0.5108,
+        "token_f1": 0.3944,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.3333,
+        "prediction": "The opinion summary is determined through a selective transformation process that conditions on the current aspect features, followed by a bi-linear attention network that computes the weighted sum of transformed opinion representations based on their association with the current aspect representation [5][6]. This summary is distilled from the whole input sentence and is conditioned on each curren"
+      },
+      {
+        "item_id": "q-c09a92e25e",
+        "composite": 0.3893,
+        "token_f1": 0.1707,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.25,
+        "prediction": "| Dimension | Source [1] | Source [3] | Source [5] | Source [6] |\n|----------|-----------|-----------|-----------|-----------|\n| Creation method | Manual annotation or use of established lexicons (e.g., WordNet, SentiWordNet) [1] | Merged and cleansed online resources (e.g., typos, slang, foreign words) [3] | Includes sentiment lexicons as part of a broader feature set [5] | Not specified; implies"
+      },
+      {
+        "item_id": "q-b03e8e9a0c",
+        "composite": 0.4432,
+        "token_f1": 0.2707,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.2857,
+        "prediction": "The baselines used in the sources include a lexicon-based baseline and a majority baseline [2][6]. In some contexts, the baseline is defined as the system that selects the best out of 1000 samples, as opposed to the SLDS model, which samples only 50 [3]. In one study, baselines were retrained on the union of train and development sets [4], and in another, the \"Balikas et al.\" system is referenced "
+      },
+      {
+        "item_id": "q-4b8257cdd9",
+        "composite": 0.3863,
+        "token_f1": 0.1918,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.2,
+        "prediction": "The authors define 'incorrect words' as erroneous or corrupted words within a text that are either missing or contain typographical, semantic, or syntactic errors, leading to incomplete or distorted natural language input [2][3]. These incorrect words are considered part of \"incomplete data\" in natural language processing and can hinder model performance, especially in sentiment classification tas"
+      },
+      {
+        "item_id": "q-f608fbc7a4",
+        "composite": 0.4848,
+        "token_f1": 0.2439,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5,
+        "prediction": "The model used to capture the implicit structure is EI (Explicit-Implicit), which learns rich implicit structures using LSTM and self-attention mechanisms [2]. In contrast, other models rely on hand-crafted discrete features or MLPs to capture implicit structures, which are less effective [2][3]. Specifically, the variant EI (i:MLP) replaces self-attention with an MLP to capture implicit structure"
+      },
+      {
+        "item_id": "q-637aa32a34",
+        "composite": 0.5429,
+        "token_f1": 0.3333,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.5714,
+        "prediction": "No, they do not report results only on English datasets. While several sources mention English datasets, they also include results for other languages. For instance, Source [2] states that experiments were conducted on datasets containing English and Spanish tweets [2]. Source [6] explicitly reports performance on English, Spanish, Turkish, Dutch, and Russian, indicating multilingual evaluation [6"
+      },
+      {
+        "item_id": "q-e292676c8c",
+        "composite": 0.4678,
+        "token_f1": 0.1368,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.625,
+        "prediction": "The soft-selection approaches evaluated in the sources are attention-based methods that assign continuous attention weights across the entire sentence, considering every word with different weights [4]. These methods are characterized by the fact that all words are taken into consideration, and the attention weights are distributed across the sentence, allowing for a soft, probabilistic selection "
+      },
+      {
+        "item_id": "q-e79a5b6b66",
+        "composite": 0.3396,
+        "token_f1": 0.0879,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.2,
+        "prediction": "The provided sources do not contain direct information comparing the performance of non-English languages in terms of sentiment analysis accuracy or any metric that would allow identifying which non-English language had the \"best performance\" in a quantitative sense. While some sources mention relative improvements in performance for specific languages, such as Spanish, Turkish, Dutch, and Russian"
+      },
+      {
+        "item_id": "q-3554ac92d4",
+        "composite": 0.6344,
+        "token_f1": 0.4839,
+        "citation_grounding": 1.0,
+        "number_agreement": 0.6667,
+        "prediction": "They generate the auxiliary sentence by converting a target-aspect pair into a natural language question that reflects the relationship between the target and the aspect. For example, for the pair (LOCATION1, safety), the auxiliary sentence generated is \"what do you think of the safety of location - 1?\" [2]. This auxiliary sentence is constructed to create a sentence pair where the original senten"
+      }
+    ]
+  }
+}

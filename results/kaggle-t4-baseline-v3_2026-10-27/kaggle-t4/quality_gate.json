@@ -1,0 +1,16 @@
+[
+  {
+    "baseline": "fp16",
+    "candidate": "awq",
+    "baseline_composite": 0.4831,
+    "candidate_composite": 0.4715,
+    "delta": -0.0116,
+    "delta_ci95": [
+      -0.0327,
+      0.0096
+    ],
+    "significant": false,
+    "verdict": "pass",
+    "detail": "no significant regression: delta -0.012 (95% CI -0.033 to +0.010) over 32 paired items"
+  }
+]

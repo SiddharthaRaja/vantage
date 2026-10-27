@@ -1,0 +1,5 @@
+
+$ git log --oneline -3
+2cb7094 Kaggle baseline v3: never hand the client's API key to vLLM
+29d5e0d Kaggle notebooks carry a version in their name: vantage_t4_baseline_v2, vantage_t4_tuning_v1
+5f44615 Kaggle notebooks: vLLM in its own Python 3.12 environment
