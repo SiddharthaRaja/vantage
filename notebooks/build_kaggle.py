@@ -1,9 +1,9 @@
 """
 Build the two Kaggle 2x T4 notebooks from one set of cells:
 
-    notebooks/vantage_kaggle.ipynb       the baseline: capacity, open loop, quality
+    notebooks/vantage_t4_baseline_v2.ipynb    the baseline: capacity, open loop, quality
                                          gate, cross-check, cache
-    notebooks/vantage_kaggle_tune.ipynb  tuning: vLLM settings one at a time, with
+    notebooks/vantage_t4_tuning_v1.ipynb     tuning: vLLM settings one at a time, with
                                          server metrics (configs/sweeps/kaggle-t4-tune)
 
     python notebooks/build_kaggle.py
@@ -25,7 +25,11 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-NOTEBOOKS = {"base": HERE / "vantage_kaggle.ipynb", "tune": HERE / "vantage_kaggle_tune.ipynb"}
+# The version is in the file name, so each Kaggle import is traceable to the
+# notebook it came from. Bump it whenever a notebook changes in a way that
+# matters to a run (v1 of the baseline installed vLLM into Kaggle's Python and
+# failed; v2 isolates it).
+NOTEBOOKS = {"base": HERE / "vantage_t4_baseline_v2.ipynb", "tune": HERE / "vantage_t4_tuning_v1.ipynb"}
 
 # (kind, text, only): only=None means the cell is in both notebooks
 CELLS: list[tuple[str, str, str | None]] = []
@@ -40,7 +44,7 @@ def code(text: str, only: str | None = None) -> None:
 
 
 md("""
-# Vantage on real hardware: Kaggle 2x T4
+# Vantage on real hardware: Kaggle 2x T4 (baseline v2)
 
 Every Vantage number so far came from its simulator. This run replaces them with measurements of
 **Qwen3-4B-Instruct-2507** served by **vLLM**, driven by **Vectora's real workload** (365 prompts
@@ -60,16 +64,16 @@ exported from qasper-300, each sent exactly as Vectora sends it).
 
 **To run:** Settings: Accelerator **GPU T4 x2**, Internet **on**. Then **Save Version, Save & Run All
 (Commit)**, so it runs unattended and the output is kept. Expect about 3 hours.
-Everything lands in `/kaggle/working/<run>/` and `vantage_kaggle_results.zip`; send me the zip.
+Everything lands in `/kaggle/working/<run>/` and `vantage_t4_baseline_v2_results.zip`; send me the zip.
 
 Each step records ok / failed / skipped in `steps.json`; one failure never stops the steps that do
 not depend on it.
 """, only="base")
 
 md("""
-# Vantage tuning: Kaggle 2x T4
+# Vantage tuning: Kaggle 2x T4 (tuning v1)
 
-The baseline run (`vantage_kaggle.ipynb`) measured where latency breaks. This run explains why and
+The baseline run (`vantage_t4_baseline_v2.ipynb`) measured where latency breaks. This run explains why and
 tries to move it. Vantage starts vLLM with one setting changed at a time, drives the same load
 points, and scrapes vLLM's `/metrics` every second: KV-cache use, requests waiting inside the
 engine, preemptions, prefix-cache hits.
@@ -87,7 +91,7 @@ All settings are in `configs/sweeps/kaggle-t4-tune.yaml`; the exact command of e
 written to `servers.json`.
 
 **To run:** Accelerator **GPU T4 x2**, Internet **on**, then **Save Version, Save & Run All
-(Commit)**. About 2.5 hours. Send me `vantage_kaggle_tune_results.zip`.
+(Commit)**. About 2.5 hours. Send me `vantage_t4_tuning_v1_results.zip`.
 """, only="tune")
 
 md("## 1. Settings and helpers")
@@ -536,7 +540,7 @@ def package():
     if os.path.exists(f"{OUT}/cache_sim.log"):
         parts += ["", "---", "", "# Semantic cache", "", "```", open(f"{OUT}/cache_sim.log").read()[-3000:], "```"]
     open(f"{OUT}/SUMMARY.md", "w").write("\n".join(parts) + "\n")
-    stem = "vantage_kaggle_tune_results" if NOTEBOOK == "tune" else "vantage_kaggle_results"
+    stem = "vantage_t4_tuning_v1_results" if NOTEBOOK == "tune" else "vantage_t4_baseline_v2_results"
     zip_path = shutil.make_archive(f"{WORK}/{stem}", "zip", WORK, RUN)
     return f"{zip_path} ({os.path.getsize(zip_path) / 1e6:.1f} MB)"
 
