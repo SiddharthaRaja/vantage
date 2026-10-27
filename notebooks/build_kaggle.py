@@ -186,21 +186,42 @@ run_step("setup", setup)
 md("""
 ## 3. vLLM
 
-Installs the newest vLLM first; if it cannot serve on a T4 (compute capability 7.5), the next
-candidate is tried in step 4. The installed version goes into the report.
+vLLM goes into **its own Python 3.12 environment** (made with `uv`), not Kaggle's. Kaggle's image is
+Python 3.13 with hundreds of preinstalled packages; installing vLLM into it once crashed vLLM on
+start-up inside `transformers`' audio imports, and older vLLM versions have no Python 3.13 builds at
+all. Vantage only talks to vLLM over HTTP, so the two never need to share packages. The
+environment's `bin` goes first on `PATH`, so every `vllm` command below is the isolated one.
+
+The newest vLLM is tried first; if it cannot serve on a T4 (compute capability 7.5), the next
+candidate is installed into a fresh environment in step 4. The version used goes into the report.
 """)
 code(r'''
 VLLM_VERSION = None
 
+VENV = "/tmp/vllm-venv"     # outside /kaggle/working, so it is not saved as output
+
 def install_vllm(spec):
+    """A fresh, isolated Python 3.12 environment with `spec` installed; its bin first on PATH."""
     global VLLM_VERSION
     if DRY_RUN:
         VLLM_VERSION = "dry-run"; return VLLM_VERSION
-    if sh(f"{sys.executable} -m pip install -q '{spec}' transformers", log=f"{OUT}/vllm_install.log", timeout=1800) != 0:
-        raise RuntimeError(f"pip install {spec} failed")
-    VLLM_VERSION = subprocess.run([sys.executable, "-c", "import vllm; print(vllm.__version__)"],
+    log = f"{OUT}/vllm_install.log"
+    if sh(f"{sys.executable} -m pip install -q uv", log=log, timeout=600) != 0:
+        raise RuntimeError("pip install uv failed")
+    shutil.rmtree(VENV, ignore_errors=True)
+    if sh(f"{sys.executable} -m uv venv -q --python 3.12 {VENV}", log=log, timeout=900) != 0:
+        raise RuntimeError("could not create the Python 3.12 environment (see vllm_install.log)")
+    if sh(f"{sys.executable} -m uv pip install -q --python {VENV}/bin/python '{spec}'", log=log, timeout=1800) != 0:
+        raise RuntimeError(f"installing {spec} failed (see vllm_install.log)")
+    if not os.environ["PATH"].startswith(f"{VENV}/bin:"):
+        os.environ["PATH"] = f"{VENV}/bin:" + os.environ["PATH"]
+    VLLM_VERSION = subprocess.run([f"{VENV}/bin/python", "-c", "import vllm; print(vllm.__version__)"],
                                   capture_output=True, text=True).stdout.strip()
-    return VLLM_VERSION
+    if not VLLM_VERSION:
+        raise RuntimeError(f"{spec} installed but does not import (see vllm_install.log)")
+    sh(f"{VENV}/bin/python -c 'import sys, torch; print(sys.version); print(torch.__version__, torch.cuda.is_available())'",
+       log=log)
+    return f"vllm {VLLM_VERSION} (isolated Python 3.12)"
 
 run_step("install_vllm", lambda: install_vllm(VLLM_CANDIDATES[0]), needs=["setup"])
 ''')
@@ -276,7 +297,12 @@ def start_servers(models=((None, 0, 8000), (None, 1, 8001))):
     current = VLLM_CANDIDATES[0]
     for spec, extra in attempts:
         if spec != current:
-            install_vllm(spec); current = spec
+            current = spec
+            try:
+                install_vllm(spec)
+            except RuntimeError as e:
+                print(f"{spec}: {e}")
+                continue
         for model, gpu, port in models:
             launch(model, gpu, port, extra)
         ports = [port for _, _, port in models]
@@ -431,6 +457,10 @@ def crosscheck():
     if DRY_RUN:
         return "skipped in dry run"
     rc = sh(f"{sys.executable} scripts/vllm_bench_dataset.py --model {FP16}", log=f"{OUT}/vllm_bench.log", cwd=REPO)
+    if rc != 0:                                    # Kaggle's transformers failed: try the vLLM environment's
+        sh(f"{sys.executable} -m uv pip install -q --python {VENV}/bin/python pyyaml httpx pydantic",
+           log=f"{OUT}/vllm_bench.log")
+        rc = sh(f"{VENV}/bin/python scripts/vllm_bench_dataset.py --model {FP16}", log=f"{OUT}/vllm_bench.log", cwd=REPO)
     if rc != 0:
         raise RuntimeError("could not build the vllm bench dataset")
     ours = {s["config_id"]: s for s in json.load(open(f"{OUT}/kaggle-t4/summaries.json"))}
